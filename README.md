@@ -1,4 +1,4 @@
-# multi-makery 🥐 
+# 🥨 multi-makery 
 
 > **The modular recipe book for your project's development environment.**
 
@@ -6,7 +6,7 @@
 
 ---
 
-## 🥖 The Bakery Metaphor
+## The Bakery Metaphor
 
 To understand `multi-makery`, you have to understand how the kitchen is organized:
 
@@ -18,7 +18,7 @@ To understand `multi-makery`, you have to understand how the kitchen is organize
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 You can use `multi-makery` in two ways: the **Global CLI** (recommended) or the **Local Makefile**.
 
@@ -38,7 +38,7 @@ bash <(curl -s https://raw.githubusercontent.com/salomepoulain/multi-makery/main
 
 ---
 
-## 📦 Basic Training (Workflow)
+## Basic Training (Workflow)
 
 ### 1. Lay the Foundation
 In a new, empty project folder, run:
@@ -68,7 +68,7 @@ bake germs
 
 ---
 
-## 🛠️ The Head Chef's Orders (Command Reference)
+## The Head Chef's Orders (Command Reference)
 
 | Command | Action | Description |
 | :--- | :--- | :--- |
@@ -84,7 +84,7 @@ bake germs
 
 ---
 
-## 👨‍🍳 Inventing New Dishes (Creating Stations)
+## Inventing New Dishes (Creating Stations)
 
 Stations are hosted in a separate registry repository (default: `salomepoulain/makery-stations`). A station directory looks like this:
 
@@ -104,7 +104,7 @@ python/
 
 ---
 
-## 🧪 Advanced Features
+## Advanced Features
 
 *   **Two-Repo System**: The **Engine** (`multi-makery`) is separate from the **Registry** (`makery-stations`). This allows you to fork the engine or create your own private registries.
 *   **Personalities**: Cooks speak in their own colored uniforms! Customize `personality.sh` to give your cooks unique voices.
