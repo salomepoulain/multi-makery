@@ -1,0 +1,72 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/check-out@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Lint scripts with shellcheck
+        run: |
+          shellcheck office/install_makery.sh
+          shellcheck office/open_makery.sh
+          shellcheck .makery/kitchen/headchef/orders/*.sh
+
+      - name: Test open_makery.sh (make-only setup)
+        run: |
+          mkdir -p /tmp/test-make-only
+          cd /tmp/test-make-only
+          bash ${{ github.workspace }}/office/open_makery.sh
+          make germs
+          make menu
+
+      - name: Test bake installation from local code
+        run: |
+          # Set up .makery from local files (simulate install_makery.sh without download)
+          mkdir -p $HOME/.makery
+          cp -r ${{ github.workspace }}/kitchen $HOME/.makery/
+          cp -r ${{ github.workspace }}/office $HOME/.makery/
+          mkdir -p $HOME/.local/bin
+          # Create bake script from local template
+          cat > $HOME/.local/bin/bake << 'EOF'
+          #!/bin/bash
+          if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
+              COMMAND="${1:-menu}"
+              STATION="${2:-}"
+              case "$COMMAND" in
+                  first|burnt|fresh|germs)
+                      shift 2
+                      make -f Makefile "$COMMAND" s="$STATION" "$@"
+                      ;;
+                  *)
+                      if [ -n "$2" ] && [[ ! "$2" == *=* ]]; then
+                          make -f Makefile "$1-$2" "$@"
+                      else
+                          make -f Makefile "$COMMAND" "$@"
+                      fi
+                      ;;
+              esac
+          else
+              if [ -z "$1" ]; then
+                  bash "$HOME/.makery/office/open_makery.sh"
+              else
+                  echo "No kitchen found here."
+                  exit 1
+              fi
+          fi
+          EOF
+          chmod +x $HOME/.local/bin/bake
+          export PATH="$HOME/.local/bin:$PATH"
+          # Test bake in a new project
+          mkdir -p /tmp/test-bake && cd /tmp/test-bake
+          bake
+          bake germs

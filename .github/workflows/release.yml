@@ -1,0 +1,32 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/check-out@v4
+
+      - name: Generate tarball
+        run: |
+          git archive --format=tar.gz --prefix=multi-makery-${{ github.ref_name }}/ ${{ github.ref }} -o multi-makery-${{ github.ref_name }}.tar.gz
+
+      - name: Generate SHA256 checksum
+        run: |
+          sha256sum multi-makery-${{ github.ref_name }}.tar.gz > multi-makery-${{ github.ref_name }}.tar.gz.sha256
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+            multi-makery-${{ github.ref_name }}.tar.gz \
+            multi-makery-${{ github.ref_name }}.tar.gz.sha256 \
+            --title "${{ github.ref_name }}" \
+            --notes "Release ${{ github.ref_name }}"
