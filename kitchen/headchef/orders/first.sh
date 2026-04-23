@@ -9,34 +9,39 @@ echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━�
 
 if [ -z "$1" ]; then
     echo -e "\033[1;31mError: You didn't tell me which station to open.\033[0m"
-    echo "Usage: ./bake first R=<station_name>"
+    echo "Usage: bake first <station_name>"
     exit 1
 fi
 
 STATION_NAME="$1"
 STATION_DIR=".makery/kitchen/stations/$STATION_NAME"
-REPO_URL="${MAKERY_REPO:-https://github.com/salomepoulain/multi-makery}"
+
+# 1. NEW: Point to the dedicated Registry repository!
+# (We use MAKERY_REGISTRY so you can override it later for private repos)
+STATIONS_REPO="${MAKERY_REGISTRY:-https://github.com/salomepoulain/makery-stations}"
 
 if [ -d "$STATION_DIR" ]; then
     echo -e "\033[1;33mThe '$STATION_NAME' station is already open.\033[0m"
     exit 0
 fi
 
-echo "  [.] Head Chef is fetching the '$STATION_NAME' station from headquarters..."
+echo "  [.] Head Chef is fetching the '$STATION_NAME' station from the Registry..."
 TMP_DIR=$(mktemp -d)
-git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$TMP_DIR" > /dev/null 2>&1
+git clone --depth 1 --filter=blob:none --sparse "$STATIONS_REPO" "$TMP_DIR" > /dev/null 2>&1
 
 if [ $? -ne 0 ]; then
-    echo -e "\033[1;31mError: Failed to contact headquarters ($REPO_URL).\033[0m"
+    echo -e "\033[1;31mError: Failed to contact the registry ($STATIONS_REPO).\033[0m"
     rm -rf "$TMP_DIR"
     exit 1
 fi
 
 cd "$TMP_DIR" || exit 1
-git sparse-checkout set "kitchen/stations/$STATION_NAME" > /dev/null 2>&1
 
-if [ ! -d "kitchen/stations/$STATION_NAME" ]; then
-    echo -e "\033[1;31mError: The '$STATION_NAME' station doesn't exist at headquarters.\033[0m"
+# 2. NEW: Because it is a dedicated repo, the station folder is right at the root!
+git sparse-checkout set "$STATION_NAME" > /dev/null 2>&1
+
+if [ ! -d "$STATION_NAME" ]; then
+    echo -e "\033[1;31mError: The '$STATION_NAME' station doesn't exist in the registry.\033[0m"
     cd - > /dev/null
     rm -rf "$TMP_DIR"
     exit 1
@@ -44,10 +49,16 @@ fi
 
 cd - > /dev/null
 mkdir -p .makery/kitchen/stations
-mv "$TMP_DIR/kitchen/stations/$STATION_NAME" ".makery/kitchen/stations/"
+
+# 3. NEW: Move it directly from the temp root to the local kitchen
+mv "$TMP_DIR/$STATION_NAME" ".makery/kitchen/stations/"
 rm -rf "$TMP_DIR"
 
 echo -e "\033[1;32m  ✓ The '$STATION_NAME' cook has arrived at their new station.\033[0m"
+
+# ============================================================================
+# The rest of the script remains exactly the same!
+# ============================================================================
 
 # 1. Dependencies
 if [ -f "$STATION_DIR/cook/.prerequisite" ]; then
@@ -97,7 +108,7 @@ if [ -f "$STATION_DIR/workbench/.contraband" ]; then
             echo "$line" >> .gitignore
             echo "      + Hidden: $line"
         fi
-done < "$STATION_DIR/workbench/.contraband"
+    done < "$STATION_DIR/workbench/.contraband"
 fi
 
 # 4. Setup Script
