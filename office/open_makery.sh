@@ -3,11 +3,15 @@
 #  OPEN MAKERY (Local Project Setup)
 # ============================================================================
 
+# Determine where this script lives so we can find the kitchen
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+MAKERY_HOME="$(dirname "$SCRIPT_DIR")"
+
 echo -e "\033[1;34m  LAYING THE FOUNDATION (Local Setup)... \033[0m"
 
 # 1. Bring the Head Chef to this specific project
 mkdir -p .makery/kitchen
-cp -r "$HOME/.makery/kitchen/headchef" ".makery/kitchen/"
+cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 
 # 2. Generate the local Makefile
 if [ ! -f "Makefile" ]; then

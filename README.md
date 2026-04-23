@@ -1,121 +1,169 @@
 # 🥨 multi-makery
 
-> **The modular recipe book for your project's development environment.**
+> A modular recipe-book system for your project's development environment.
 
-`multi-makery` is a declarative project scaffolding system powered by Make. Instead of copy-pasting monolithic Makefiles between projects, you hire specialized **Line Cooks** to set up their **Stations** in your project. It’s like a package manager for your boilerplate, but with a lot more personality.
+`multi-makery` is a declarative scaffolding system powered by Make. Instead of copying Makefiles between projects, you hire specialized **Stations** to set up environments and run tasks. Think of it as a package manager for boilerplate with personality.
 
 ---
 
 ## The Bakery Metaphor
 
-To understand `multi-makery`, you have to understand how the kitchen is organized:
+- `.makery` is a tiny bakery that lives in your repository.
+- The **Head Chef** (`.makery/headchef`) is the main orchestrator.
+- **Stations** are workspaces where specialized **Dishes** get baked — each Station focuses on one kind of action and brings its own dependencies.
+- You **order Dishes** from the menu with `bake`.
 
-* **The Kitchen**: Your project directory.
-* **The Head Chef (`.makery/headchef`)**: The core engine that handles hiring, firing, and overall management.
-* **Line Cooks (`cook/`)**: The active logic. They set up environments, install dependencies, and run scripts.
-* **Skills (`skills/`)**: Specialized scripts a cook knows how to perform (e.g., `git-public`, `python-deploy`).
-* **The Menu (`menu.mk`)**: Every cook brings a menu of skills which are automatically integrated into your project's master menu.
+When you order a new Dish (`first <name>`)
+- The Head Chef hires the appropriate Station.
+- The Station checks its dependencies and sets itself up.
+- At hire time the Station runs its start contract (for example, creating a `.venv` for Python) so common setup happens automatically.
+
+Cleaning and refreshing
+- If a Station caches files, wash it with `bake fresh <name>`.
+- `bake germs` cleans all workbenches (kitchen-wide).
+- `bake burnt <name>` fires the Station and runs its stop script to undo leftovers.
+
+Hidden workspace
+- `.makery` is hidden from git by default.
+- `.contraband` lists files and paths to keep out of version control.
 
 ---
 
 ## Getting Started
 
-### 1. The Global License (System Install)
-To use the `bake` command anywhere on your system, run the global installer. This only needs to be done **once**.
+### Option 1: Install with `bake` (global, recommended)
 
+Install the `bake` command once per machine:
 ```bash
-curl -sSL [https://raw.githubusercontent.com/salomepoulain/multi-makery/main/install_makery.sh](https://raw.githubusercontent.com/salomepoulain/multi-makery/main/install_makery.sh) | bash
+curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/install_makery.sh -o install_makery.sh
+sha256sum install_makery.sh
+bash install_makery.sh
 ```
-*This installs `bake` to `~/.local/bin` and stores the engine in `~/.makery`.*
+This installs `bake` to `~/.local/bin` and the engine to `~/.makery`.
 
-### 2. Open a Kitchen (Project Initialization)
-In a new, empty project folder, simply type:
+Then in a new project folder:
 ```bash
 bake
 ```
-*Because the `bake` command is global, it detects the absence of a kitchen and automatically runs `open_makery.sh` to build your local `.makery` folder and `Makefile`.*
+`bake` detects the missing kitchen and runs `open_makery.sh` to create `.makery` and a local `Makefile`.
+
+### Option 2: Use `make` only (no global install)
+
+If you don't want to install `bake` globally, you can set up a single project manually:
+
+```bash
+# 1. Clone multi-makery into your project (or download the files)
+git clone --depth 1 https://github.com/salomepoulain/multi-makery.git .makery-temp
+
+# 2. Set up the kitchen manually
+bash .makery-temp/office/open_makery.sh
+
+# 3. Clean up
+rm -rf .makery-temp
+```
+
+Now you can use `make` directly:
+```bash
+make first s=python    # Hire the python station
+make git-public       # Run a skill (same as `bake git public`)
+make fresh s=python   # Clean the python workbench
+make germs            # Clean all workbenches
+make burnt s=python   # Fire the python station
+```
+
+**Note:** Without `bake`, you lose hyphen-stitching (`bake git public` → `make git-public`) and auto-initialization, but all core functionality works with `make` directly.
 
 ---
 
-## Bake vs. Make: What's the difference?
+## Core Commands (customer-facing)
 
-`multi-makery` is designed to be "Make-native" but "Bake-enhanced."
+- `bake` — Initialize the kitchen in the current folder.
+- `bake first <name>` — Hire a Station and run its onboarding.
+- `bake fresh <name>` — Force a Station to scrub its workspace.
+- `bake burnt <name>` — Fire a Station and undo its leftovers.
+- `bake germs` — Kitchen-wide cleanup of all workbenches.
+- `bake all` — Fire all Stations and remove `.makery`.
+- `bake inspo` — List available Stations/dishes from the registry.
 
-| Feature | `bake` (Global CLI) | `make` (Local Fallback) |
-| :--- | :--- | :--- |
-| **Setup** | Installed once per computer. | Lives inside each project. |
-| **Syntax** | `bake first python` | `make first s=python` |
-| **Routing** | Smart routing: `bake git public` | Standard: `make git-public` |
-| **Auto-Init** | Runs `open_makery` automatically. | Requires manual script execution. |
-
----
-
-## Basic Training (Workflow)
-
-### 1. Hire a Cook
-Need version control? Call the agency:
-```bash
-bake first git
-```
-*The Head Chef fetches the Git station from the registry, initializes your repo, and creates your GitHub remote.*
-
-### 2. Read the Menu
-See what your hired cooks can do:
-```bash
-bake menu
-```
-
-### 3. Use a Skill
-Run a specific action from a cook's menu:
-```bash
-bake git public
-```
-*The `bake` command intelligently maps this to the `git-public` target in your Makefile.*
-
-### 4. Clean the Kitchen
-Remove the temporary mess (logs, caches, etc.) from all stations:
-```bash
-bake germs
-```
+**Note:** The global `bake` command supports hyphen-stitched names (`bake git public`) as well as direct Make targets (`make git-public`) for compatibility.
 
 ---
 
-## The Head Chef's Orders (Command Reference)
+## Bake vs. Make
 
-| Command | Action | Description |
-| :--- | :--- | :--- |
-| `bake` | **Initialize** | Runs `open_makery.sh` to build a kitchen in the current folder. |
-| `bake first <name>` | **Hire** | Downloads a station and runs the cook's onboarding script. |
-| `bake burnt <name>` | **Fire** | Tears down a station and deletes its files. |
-| `bake germs` | **Deep Clean** | Scrubs every workbench (removes local build artifacts). |
-| `bake fresh <name>` | **Scrub** | Forces a specific cook to scrub their workbench. |
-| `bake all` | **Explode** | Fires everyone and deletes the entire `.makery` folder. |
+The `bake` command is a convenience wrapper around `make`. The core functionality lives in the `Makefile` and `.makery/kitchen/headchef/menu.mk`:
+
+- **With `bake`**: You get hyphen-stitching (`bake git public` → `make git-public`), auto-initialization, and the nice CLI UX.
+- **With `make` directly**: Works too! Use `make first s=python` or `make git-public` — the `Makefile` includes all the headchef and station menus automatically.
+
+Most users will prefer `bake` for the convenience, but `make` works as a fallback.
 
 ---
 
-## Inventing New Dishes (Creating Stations)
+## Available Dishes (station structure)
 
-Stations are hosted in your Registry (default: `salomepoulain/makery-stations`). A station directory looks like this:
+A Station is organized like this:
 
-```text
-git/
-├── menu.mk            # Maps bake commands to skill scripts
+```
+station-name/
+├── menu.mk            # Maps bake commands to scripts (first, fresh, burnt)
 ├── cook/
-│   ├── start.sh       # Onboarding logic (runs during 'first')
-│   ├── .prerequisite  # Required system tools (e.g., 'gh')
-│   └── personality.sh # Cook's color and dialogue
-├── skills/
-│   ├── public.sh      # Individual skill logic
-│   └── private.sh
+│   ├── start.sh       # Runs when the Station is hired
+│   ├── quit.sh       # Runs when the Station is fired
+│   ├── .prerequisite # Required system tools (e.g., gh, python)
+│   └── personality.sh # Optional messages/theme
+├── skills/            # Actions the Station knows
+│   ├── setup.sh       # Example: prepare environment
+│   └── deploy.sh      # Example: deploy a package
 └── workbench/
-    ├── .contraband    # Rules to append to project .gitignore
-    └── .dishsoap      # Paths to delete during 'germs'
+    ├── .contraband    # Rules appended to project .gitignore
+    └── .dishsoap      # Paths/caches cleaned by `bake fresh`
 ```
+
+Published reference: `salomepoulain/makery-stations`.
 
 ---
 
-## Advanced Features
+## Creating New Stations
 
-* **Two-Repo System**: The **Engine** (`multi-makery`) is separate from the **Registry** (`makery-stations`).
-* **Hyphen-Stitching**: The global `bake` command allows you to use spaces instead of hyphens for a more modern CLI feel (`bake git public` vs `make git-public`).
-* **Contraband Protection**: The workbench automatically handles your `.gitignore` so you never leak secrets or heavy dependencies.
+Stations live in a registry (default: `salomepoulain/makery-stations`). Each Station declares its prerequisite tools and provides:
+- `start.sh` for onboarding,
+- `menu.mk` mapping human-friendly names to scripts,
+- modular `skills/` files for individual actions,
+- a `workbench/` with `.contraband` and `.dishsoap` for hygiene and cleanup.
+
+---
+
+## Security and Reproducibility
+
+- Verify the installer hash or signature before running.
+- Prefer package managers (e.g., Homebrew) when available.
+- Do not run remote scripts without review.
+- For reproducible installs, pin the release tag and verify checksums or Git commit signatures.
+
+---
+
+## Installation — Verified Releases
+
+Each release publishes:
+- `multi-makery-<tag>.tar.gz` — source tarball
+- `multi-makery-<tag>.tar.gz.sha256` — SHA256 checksums
+- Optional GPG signature `.asc`
+
+Verify example:
+```bash
+curl -sSL -o multi-makery-v0.1.0.tar.gz \
+  https://github.com/salomepoulain/multi-makery/releases/download/v0.1.0/multi-makery-v0.1.0.tar.gz
+sha256sum -c <<< "$(grep multi-makery-v0.1.0.tar.gz multi-makery-v0.1.0.tar.gz.sha256)"
+gpg --verify multi-makery-v0.1.0.tar.gz.asc
+```
+The installer automatically downloads and verifies the checksum from the release assets.
+
+---
+
+## Contributing
+
+To add a Station:
+1. Follow the Station template.
+2. Publish to the registry (e.g., `salomepoulain/makery-stations`).
+3. Update the changelog and create a signed Git tag for the release.

@@ -1,54 +1,66 @@
 #!/usr/bin/env bash
 # install_makery.sh — Global installer for multi-makery
-# Recommended: review this script, verify checksum, then run.
+# Review this script before running:
+#   curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/install_makery.sh -o install_makery.sh
+#   sha256sum install_makery.sh
+#   bash install_makery.sh
 
 set -euo pipefail
 
 REPO_URL="https://github.com/salomepoulain/multi-makery"
-RELEASE_TAG="v1.0.0"                 # <- pin a release
-EXPECTED_SHA256=""                   # <- set this to the release tarball/clone hash
+RELEASE_TAG="v0.1.0"                    # <- update this for each release
+TARBALL_NAME="multi-makery-${RELEASE_TAG}.tar.gz"
+CHECKSUM_NAME="${TARBALL_NAME}.sha256"
 HQ_DIR="$HOME/.makery"
 BIN_DIR="$HOME/.local/bin"
 BINARY_NAME="bake"
 
 echo -e "\033[1;35m==> Building global Makery headquarters...\033[0m"
 
-# Verify PATH contains BIN_DIR or give guidance
+# Warn about PATH
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-  echo -e "\n\033[1;33mNOTE:\$HOME/.local/bin is not in your PATH.\033[0m"
+  echo -e "\n\033[1;33mNOTE: $HOME/.local/bin is not in your PATH.\033[0m"
   echo "Add it with:"
   echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
-  echo "and consider adding that line to your shell profile (~/.bashrc or ~/.zshrc).\n"
+  echo "and consider adding that line to your shell profile.\n"
 fi
 
-# Create directories
 mkdir -p "$HQ_DIR" "$BIN_DIR"
 
-# Clone the repo at a specific tag/ref for reproducibility
-TMP_DIR=$(mktemp -d)
-echo "Cloning $REPO_URL (ref: $RELEASE_TAG) into temporary directory..."
-git clone --depth 1 --branch "$RELEASE_TAG" "$REPO_URL" "$TMP_DIR"
+# Fetch release tarball and checksum, then verify
+TMP_TARBALL=$(mktemp)
+TMP_CHECKSUM=$(mktemp)
 
-# Optional integrity check (if you provide SHA256 for the tarball or a manifest)
-# if [ -n "$EXPECTED_SHA256" ]; then
-#   cd "$TMP_DIR"
-#   sha256sum -c <<< "$EXPECTED_SHA256  multi-makery.tar.gz"
-# fi
+echo "Downloading $REPO_URL/releases/download/$RELEASE_TAG/$TARBALL_NAME ..."
+curl -sSL -o "$TMP_TARBALL" "$REPO_URL/releases/download/$RELEASE_TAG/$TARBALL_NAME"
 
-# Install only the binary (if you provide one). If shipping the repo, copy selectively.
-# Here we assume 'kitchen' and 'office' are needed for the per-project kitchen.
-echo "Copying kitchen and office to $HQ_DIR ..."
-cp -r "$TMP_DIR/kitchen" "$HQ_DIR/"
-cp -r "$TMP_DIR/office" "$HQ_DIR/"
+echo "Downloading checksum..."
+curl -sSL -o "$TMP_CHECKSUM" "$REPO_URL/releases/download/$RELEASE_TAG/$CHECKSUM_NAME"
 
-# Install the global binary (generate from repo or prebuilt)
+echo "Verifying checksum..."
+EXPECTED_HASH=$(awk '{print $1}' "$TMP_CHECKSUM")
+ACTUAL_HASH=$(sha256sum "$TMP_TARBALL" | awk '{print $1}')
+
+if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
+  echo -e "\033[1;31mChecksum verification failed!\033[0m"
+  echo "Expected: $EXPECTED_HASH"
+  echo "Actual:   $ACTUAL_HASH"
+  rm "$TMP_TARBALL" "$TMP_CHECKSUM"
+  exit 1
+fi
+echo "Checksum verified."
+
+tar -xzf "$TMP_TARBALL" -C "$HQ_DIR" --strip-components=1
+rm "$TMP_TARBALL" "$TMP_CHECKSUM"
+
+# Install the global binary
 echo "Installing global $BINARY_NAME to $BIN_DIR ..."
 cat > "$BIN_DIR/$BINARY_NAME" << 'BINARY_EOF'
 #!/bin/bash
 # Global bake command router
 if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
     COMMAND="${1:-menu}"
-    STATION="$2"
+    STATION="${2:-}"
     case "$COMMAND" in
         first|burnt|fresh|germs)
             shift 2
@@ -73,11 +85,6 @@ fi
 BINARY_EOF
 
 chmod +x "$BIN_DIR/$BINARY_NAME"
-
-# Keep HQ's open_makery.sh up-to-date (optional)
-# cp "$TMP_DIR/office/open_makery.sh" "$HQ_DIR/office/"
-
-rm -rf "$TMP_DIR"
 
 echo
 echo -e "\033[1;32m==> Global Makery installed to $BIN_DIR/$BINARY_NAME\033[0m"
