@@ -2,15 +2,12 @@
 # ============================================================================
 #  OPEN MAKERY (Bootstrap / Install Script)
 # ============================================================================
-# Usage:
-#   bash open_makery.sh make  -> Local project setup
-#   bash open_makery.sh bake  -> Global system install
 
 MODE=$1
 REPO_URL="${MAKERY_REPO:-https://github.com/salomepoulain/multi-makery}"
 
 setup_local() {
-    echo -e "\033[1;34m  LAYING THE CONCRETE (Local Setup)... \033[0m"    
+    echo -e "\033[1;34m  LAYING THE FOUNDATION (Local Setup)... \033[0m"    
     
     TMP_DIR=$(mktemp -d)
     git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$TMP_DIR" > /dev/null 2>&1
@@ -27,7 +24,7 @@ setup_local() {
     if [ ! -f "Makefile" ]; then
         echo "  [.] Creating new Makefile..."
         cat << 'EOF' > Makefile
-.PHONY: menu first burnt germs fresh all concrete
+.PHONY: menu first burnt germs fresh all
 
 # Include the Head Chef's core menu
 -include .makery/kitchen/headchef/menu.mk
@@ -39,7 +36,7 @@ setup_local() {
 .DEFAULT_GOAL := menu
 EOF
     else
-        if ! grep -q ".makery/kitchen/headchef/menu.mk" Makefile; then
+        if ! grep -q "\.makery/kitchen/headchef/menu\.mk" Makefile; then
             echo "  [.] Adding Makery hooks to existing Makefile..."
             echo -e "\n# --- MAKERY HOOKS ---" >> Makefile
             echo "-include .makery/kitchen/headchef/menu.mk" >> Makefile
@@ -47,23 +44,7 @@ EOF
         fi
     fi
 
-    # Create local bake wrapper
-    cat << 'EOF' > bake
-#!/bin/bash
-COMMAND="${1:-menu}"
-STATION="$2"
-
-case "$COMMAND" in
-    first|burnt|fresh) 
-        shift 2
-        make -f Makefile "$COMMAND" s="$STATION" "$@"
-        ;; 
-    *)
-        make -f Makefile "$COMMAND" "$@"
-        ;; 
-esac
-EOF
-    chmod +x bake
+    # Make internal scripts executable (No local 'bake' file created)
     chmod +x .makery/kitchen/headchef/orders/*.sh
 
     # 1. Automatic .gitignore for the Kitchen itself
@@ -72,11 +53,9 @@ EOF
             echo "  [.] Hiding the kitchen (.makery/) from the Health Inspector..."
             echo -e "\n# --- MAKERY ---" >> .gitignore
             echo ".makery/" >> .gitignore
-            echo "bake" >> .gitignore
         fi
     else
         echo ".makery/" > .gitignore
-        echo "bake" >> .gitignore
     fi
 }
 
@@ -98,11 +77,11 @@ install_global() {
     cp -r "$TMP_DIR/office" "$HQ_DIR/"
     rm -rf "$TMP_DIR"
 
-    # Install global bake command
+    # Install global bake command to ~/.local/bin
     cat << 'EOF' > "$BIN_DIR/bake"
 #!/bin/bash
 # Global bake command
-if [ -f "Makefile" ] && grep -q ".makery" Makefile; then
+if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
     COMMAND="${1:-menu}"
     STATION="$2"
     case "$COMMAND" in
@@ -111,20 +90,26 @@ if [ -f "Makefile" ] && grep -q ".makery" Makefile; then
             make -f Makefile "$COMMAND" s="$STATION" "$@"
             ;; 
         *)
-            make -f Makefile "$COMMAND" "$@"
+            # THE MAGIC TRICK:
+            # If there is a second word, and it isn't a variable (like VAR=1),
+            # stitch the first two words together with a hyphen!
+            if [ -n "$2" ] && [[ ! "$2" == *=* ]]; then
+                TARGET="$1-$2"
+                shift 2
+                make -f Makefile "$TARGET" "$@"
+            else
+                make -f Makefile "$COMMAND" "$@"
+            fi
             ;; 
     esac
 else
-    COMMAND="${1:-concrete}"
-    if [ "$COMMAND" == "concrete" ]; then
-        # Check if we have a local office, otherwise use global HQ
-        if [ -f ".makery/office/open_makery.sh" ]; then
-            bash ".makery/office/open_makery.sh" make
-        else
-            bash "$HOME/.makery/office/open_makery.sh" make
-        fi
+    # 2. No Makefile found! Auto-initialize or warn the user.
+    if [ -z "$1" ]; then
+        echo -e "\033[1;33mNo kitchen found here. Building one now...\033[0m"
+        bash "$HOME/.makery/office/open_makery.sh" make
     else
-        echo "No kitchen found here. Type 'bake concrete' to lay the foundation."
+        echo -e "\033[1;31mNo kitchen found here. Type just 'bake' first to build the foundation.\033[0m"
+        exit 1
     fi
 fi
 EOF
