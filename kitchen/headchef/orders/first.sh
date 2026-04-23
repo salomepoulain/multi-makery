@@ -15,9 +15,6 @@ fi
 
 STATION_NAME="$1"
 STATION_DIR=".makery/kitchen/stations/$STATION_NAME"
-
-# 1. NEW: Point to the dedicated Registry repository!
-# (We use MAKERY_REGISTRY so you can override it later for private repos)
 STATIONS_REPO="${MAKERY_REGISTRY:-https://github.com/salomepoulain/makery-stations}"
 
 if [ -d "$STATION_DIR" ]; then
@@ -36,8 +33,6 @@ if [ $? -ne 0 ]; then
 fi
 
 cd "$TMP_DIR" || exit 1
-
-# 2. NEW: Because it is a dedicated repo, the station folder is right at the root!
 git sparse-checkout set "$STATION_NAME" > /dev/null 2>&1
 
 if [ ! -d "$STATION_NAME" ]; then
@@ -49,23 +44,19 @@ fi
 
 cd - > /dev/null
 mkdir -p .makery/kitchen/stations
-
-# 3. NEW: Move it directly from the temp root to the local kitchen
 mv "$TMP_DIR/$STATION_NAME" ".makery/kitchen/stations/"
 rm -rf "$TMP_DIR"
 
 echo -e "\033[1;32m  ✓ The '$STATION_NAME' cook has arrived at their new station.\033[0m"
-
-# ============================================================================
-# The rest of the script remains exactly the same!
-# ============================================================================
 
 # 1. Dependencies
 if [ -f "$STATION_DIR/cook/.prerequisite" ]; then
     echo "  [.] Checking if the cook has their required personal tools..."
     MISSING_DEPS=0
     while IFS= read -r dep || [ -n "$dep" ]; do
-        if [[ -z "$dep" || "$dep" == #* ]]; then continue; fi
+        # FIXED: Added quotes around the #
+        if [[ -z "$dep" || "$dep" == "#"* ]]; then continue; fi
+        
         if ! command -v "$dep" &> /dev/null; then
             echo -e "      \033[1;31m✗ Missing:\033[0m $dep"
             MISSING_DEPS=$((MISSING_DEPS + 1))
@@ -84,8 +75,7 @@ fi
 # 2. Pantry (Static files)
 if [ -d "$STATION_DIR/workbench/pantry" ]; then
     echo "  [.] The cook is unpacking ingredients from the pantry onto the workbench..."
-    for item in "$STATION_DIR/workbench/pantry"/*;
-    do
+    for item in "$STATION_DIR/workbench/pantry"/*; do
         if [ -f "$item" ]; then
             filename=$(basename "$item")
             if [ ! -e "$filename" ]; then
@@ -103,7 +93,9 @@ if [ -f "$STATION_DIR/workbench/.contraband" ]; then
     echo "  [.] The cook is hiding their contraband under the workbench..."
     touch .gitignore
     while IFS= read -r line || [ -n "$line" ]; do
-        if [[ -z "$line" || "$line" == #* ]]; then continue; fi
+        # FIXED: Added quotes around the #
+        if [[ -z "$line" || "$line" == "#"* ]]; then continue; fi
+        
         if ! grep -Fxq "$line" .gitignore; then
             echo "$line" >> .gitignore
             echo "      + Hidden: $line"
@@ -113,7 +105,6 @@ fi
 
 # 4. Setup Script
 if [ -f "$STATION_DIR/cook/start.sh" ]; then
-    # Load personality if it exists
     if [ -f "$STATION_DIR/cook/personality.sh" ]; then
         source "$STATION_DIR/cook/personality.sh"
     fi
