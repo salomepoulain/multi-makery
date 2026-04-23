@@ -75,6 +75,29 @@ make burnt s=python   # Fire the python station
 
 ---
 
+## Development Setup
+
+### Pre-commit hook (recommended)
+
+Run shellcheck before every commit:
+
+```bash
+# One-time setup: tell git to use the repo's hooks directory
+git config core.hooksPath .githooks
+
+# Install shellcheck (if not already installed)
+# macOS: brew install shellcheck
+# Ubuntu: sudo apt install shellcheck
+```
+
+The hook lints all `*.sh` files staged for commit. If shellcheck isn't installed, the hook prints a warning and allows the commit.
+
+### CI Safety Net
+
+The GitHub Actions workflow (`.github/workflows/test.yml`) also runs shellcheck on every push to `main` and on PRs — this catches anything that slipped past the pre-commit hook.
+
+---
+
 ## Core Commands (customer-facing)
 
 - `bake` — Initialize the kitchen in the current folder.
@@ -167,3 +190,27 @@ To add a Station:
 1. Follow the Station template.
 2. Publish to the registry (e.g., `salomepoulain/makery-stations`).
 3. Update the changelog and create a signed Git tag for the release.
+
+---
+
+## Development Setup
+
+### Pre-commit hooks
+
+We use the [pre-commit](https://pre-commit.com/) framework to lint shell scripts before commit:
+
+```bash
+# One-time setup
+pip install pre-commit
+pre-commit install
+
+# Install shellcheck (if not already installed)
+# macOS: brew install shellcheck
+# Ubuntu: sudo apt install shellcheck
+```
+
+The `.pre-commit-config.yaml` runs `shellcheck` on all `*.sh` files staged for commit.
+
+### CI Safety Net
+
+The GitHub Actions workflow (`.github/workflows/test.yml`) also runs shellcheck on every push to `main` and on PRs — this catches anything that slipped past the pre-commit hook.
