@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-#  HEAD CHEF: GERMS (Health Inspector is coming)
+#  HEAD CHEF: GERMS / FRESH (Health Inspector is coming)
 # ============================================================================
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
@@ -14,7 +14,9 @@ clean_station() {
     
     if [ -f "$station_dir/workbench/.dishsoap" ]; then
         while IFS= read -r path_to_clean || [ -n "$path_to_clean" ]; do
-            if [[ -z "$path_to_clean" || "$path_to_clean" == #* ]]; then continue; fi
+            # FIXED: Added quotes around the # to prevent Bash syntax errors
+            if [[ -z "$path_to_clean" || "$path_to_clean" == "#"* ]]; then continue; fi
+            
             if [ -e "$path_to_clean" ]; then
                 rm -rf "$path_to_clean"
                 if [ "$cleaned" = false ]; then
@@ -37,10 +39,14 @@ if [ -n "$1" ]; then
 else
     # Clean all stations
     echo "  [.] The Head Chef is screaming. Everyone is scrubbing their workbenches!"
-    for dir in .makery/kitchen/stations/*/; do
-        if [ ! -d "$dir" ]; then continue; fi
-        clean_station "$dir"
-    done
+    
+    # Check if there are any stations at all before looping
+    if [ -d ".makery/kitchen/stations/" ] && [ "$(ls -A .makery/kitchen/stations/)" ]; then
+        for dir in .makery/kitchen/stations/*/; do
+            [ -e "$dir" ] || continue
+            clean_station "$dir"
+        done
+    fi
 fi
 
 echo -e "\n\033[1;32m  ✓ The kitchen is spotless. We will pass the inspection.\033[0m"
