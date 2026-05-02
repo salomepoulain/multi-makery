@@ -11,7 +11,7 @@ REPO_URL="https://github.com/salomepoulain/multi-makery"
 
 # Fetch the latest release tag dynamically
 RELEASE_TAG=$(curl -sSL "https://api.github.com/repos/salomepoulain/multi-makery/releases/latest" | \
-  grep -oP '"tag_name":\s*"\K[^"]+' || echo "v0.1.0")
+  grep -oE '"tag_name":\s*"[^"]+' | sed 's/"tag_name":\s*"\(.*\)"/\1/' || echo "v0.1.0")
 if [ -z "$RELEASE_TAG" ]; then
   echo -e "\033[1;31mFailed to fetch latest release tag, defaulting to v0.1.0\033[0m"
   RELEASE_TAG="v0.1.0"
@@ -61,9 +61,33 @@ echo "Checksum verified."
 tar -xzf "$TMP_TARBALL" -C "$HQ_DIR" --strip-components=1
 rm "$TMP_TARBALL" "$TMP_CHECKSUM"
 
-# Install the global binary
+# Install the global binary (check if cabinet exists, else embed)
 echo "Installing global $BINARY_NAME to $BIN_DIR ..."
-cp "$HQ_DIR/office/cabinet/bake" "$BIN_DIR/$BINARY_NAME"
+if [ -f "$HQ_DIR/office/cabinet/bake" ]; then
+  cp "$HQ_DIR/office/cabinet/bake" "$BIN_DIR/$BINARY_NAME"
+else
+  echo "  (using embedded binary - cabinet not in this release)"
+  cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
+#!/bin/bash
+# Global bake command router
+if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
+    # Try two-argument mode: try "$1" s="$2", fall back to call s="$1" d="$2"
+    if [ $# -ge 2 ] && [[ ! "$2" == *=* ]]; then
+        make -f Makefile "$1" s="$2" "$@" 2>/dev/null || \
+            make -f Makefile "call" s="$1" d="$2" "$@"
+    else
+        make -f Makefile "$@"
+    fi
+else
+    if [ -z "$1" ]; then
+        bash "$HOME/.makery/office/open_makery.sh"
+    else
+        echo -e "\033[1;31mNo kitchen found here. Type 'bake' to build one.\033[0m"
+        exit 1
+    fi
+fi
+BAKE_EOF
+fi
 chmod +x "$BIN_DIR/$BINARY_NAME"
 
 echo
