@@ -17,13 +17,10 @@ cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 if [ ! -f "Makefile" ]; then
     echo "  [.] Creating new Makefile..."
     cat << 'EOF' > Makefile
-.PHONY: menu first burnt germs fresh all
+.PHONY: menu first burnt germs fresh all call
 
 # Include the Head Chef's core menu
 -include .makery/kitchen/headchef/menu.mk
-
-# Include all station menus
--include .makery/kitchen/stations/*/menu.mk
 
 # Default goal: show the menu
 .DEFAULT_GOAL := menu
@@ -34,7 +31,6 @@ else
         echo "  [.] Adding Makery hooks to existing Makefile..."
         echo -e "\n# --- MAKERY HOOKS ---" >> Makefile
         echo "-include .makery/kitchen/headchef/menu.mk" >> Makefile
-        echo "-include .makery/kitchen/stations/*/menu.mk" >> Makefile
     fi
 fi
 

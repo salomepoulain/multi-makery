@@ -64,39 +64,17 @@ rm -rf .makery-temp
 
 Now you can use `make` directly:
 ```bash
-make first s=python    # Hire the python station
-make git-public       # Run a skill (same as `bake git public`)
-make fresh s=python   # Clean the python workbench
-make germs            # Clean all workbenches
-make burnt s=python   # Fire the python station
+make first s=python       # Hire the python station
+make call s=python d=test  # Run a dish from a station
+make fresh s=python       # Clean the python workbench
+make germs                # Clean all workbenches
+make burnt s=python       # Fire the python station
 ```
 
-**Note:** Without `bake`, you lose hyphen-stitching (`bake git public` → `make git-public`) and auto-initialization, but all core functionality works with `make` directly.
+**Note:** Without `bake`, you lose auto-initialization and the simplified routing, but all core functionality works with `make` directly.
 
 ---
 
-## Development Setup
-
-### Pre-commit hook (recommended)
-
-Run shellcheck before every commit:
-
-```bash
-# One-time setup: tell git to use the repo's hooks directory
-git config core.hooksPath .githooks
-
-# Install shellcheck (if not already installed)
-# macOS: brew install shellcheck
-# Ubuntu: sudo apt install shellcheck
-```
-
-The hook lints all `*.sh` files staged for commit. If shellcheck isn't installed, the hook prints a warning and allows the commit.
-
-### CI Safety Net
-
-The GitHub Actions workflow (`.github/workflows/test.yml`) also runs shellcheck on every push to `main` and on PRs — this catches anything that slipped past the pre-commit hook.
-
----
 
 ## Core Commands (customer-facing)
 
@@ -108,7 +86,7 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) also runs shellcheck 
 - `bake all` — Fire all Stations and remove `.makery`.
 - `bake inspo` — List available Stations/dishes from the registry.
 
-**Note:** The global `bake` command supports hyphen-stitched names (`bake git public`) as well as direct Make targets (`make git-public`) for compatibility.
+**Note:** The bake command routes commands automatically — core operations take a station name (e.g., `bake first python`), while station dishes use the `call` target (e.g., `bake python test` → `make call s=python d=test`).
 
 ---
 
@@ -116,8 +94,10 @@ The GitHub Actions workflow (`.github/workflows/test.yml`) also runs shellcheck 
 
 The `bake` command is a convenience wrapper around `make`. The core functionality lives in the `Makefile` and `.makery/kitchen/headchef/menu.mk`:
 
-- **With `bake`**: You get hyphen-stitching (`bake git public` → `make git-public`), auto-initialization, and the nice CLI UX.
-- **With `make` directly**: Works too! Use `make first s=python` or `make git-public` — the `Makefile` includes all the headchef and station menus automatically.
+- **With `bake`**: Auto-initialization and the nice CLI UX. The bake script tries `make $1 s=$2` first, falling back to `make call s=$1 d=$2` for station dishes.
+  - `bake first python` → `make first s=python` (core commands)
+  - `bake python test` → `make call s=python d=test` (station dishes)
+- **With `make` directly**: Works too! Use `make first s=python` or `make call s=python d=test` — the `Makefile` includes all the headchef and station menus automatically.
 
 Most users will prefer `bake` for the convenience, but `make` works as a fallback.
 
@@ -125,19 +105,20 @@ Most users will prefer `bake` for the convenience, but `make` works as a fallbac
 
 ## Available Dishes (station structure)
 
-A Station is organized like this:
+A Station is a regular Makefile with explicit targets and comments. It works standalone — just `cd` to the station directory and run `make <dish>`.
 
 ```
 station-name/
-├── menu.mk            # Maps bake commands to scripts (first, fresh, burnt)
+├── menu.mk            # Regular Makefile with targets + comments
 ├── cook/
-│   ├── start.sh       # Runs when the Station is hired
-│   ├── quit.sh       # Runs when the Station is fired
+│   ├── first.sh      # Runs when the Station is hired (target: first)
+│   ├── fresh.sh      # Cleans the workbench (target: fresh)
+│   ├── burnt.sh      # Runs when the Station is fired (target: burnt)
 │   ├── .prerequisite # Required system tools (e.g., gh, python)
 │   └── personality.sh # Optional messages/theme
-├── skills/            # Actions the Station knows
-│   ├── setup.sh       # Example: prepare environment
-│   └── deploy.sh      # Example: deploy a package
+├── dishes/            # Actions the Station knows
+│   ├── example.sh     # Example: prepare environment (target: example)
+│   └── custom.sh      # Example: custom dish (target: custom)
 └── workbench/
     ├── .contraband    # Rules appended to project .gitignore
     └── .dishsoap      # Paths/caches cleaned by `bake fresh`
@@ -149,10 +130,43 @@ Published reference: `salomepoulain/makery-stations`.
 
 ## Creating New Stations
 
-Stations live in a registry (default: `salomepoulain/makery-stations`). Each Station declares its prerequisite tools and provides:
-- `start.sh` for onboarding,
-- `menu.mk` mapping human-friendly names to scripts,
-- modular `skills/` files for individual actions,
+Stations live in a registry (default: `salomepoulain/makery-stations`). Use the template in `office/station-template/` to create new Stations.
+
+### Writing a Station `menu.mk`
+
+Write a regular Makefile with explicit targets and comments — no `MAKEFILE_LIST`, no `DISHES` list:
+
+```makefile
+# station-name/menu.mk
+# Standalone Makefile — works with: cd .makery/kitchen/stations/<name> && make <dish>
+
+# first: Hire the station (sets up environment)
+first:
+	@bash cook/first.sh
+
+# fresh: Clean the station's workbench
+fresh:
+	@bash cook/fresh.sh
+
+# burnt: Fire the station
+burnt:
+	@bash cook/burnt.sh
+
+# Add your dishes below with comments:
+
+# example: Example dish
+example:
+	@bash dishes/example.sh
+```
+
+The headchef provides a `call` target that routes to stations. Use `make call s=<station> d=<dish>` or let `bake` handle routing automatically.
+
+### Station structure requirements
+
+Each Station provides:
+- `menu.mk` (copy from `office/station-template/menu.mk` and write your targets with comments),
+- `cook/` scripts (first.sh, fresh.sh, burnt.sh, etc.),
+- modular `dishes/` files for custom dishes,
 - a `workbench/` with `.contraband` and `.dishsoap` for hygiene and cleanup.
 
 ---

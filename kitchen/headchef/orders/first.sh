@@ -107,7 +107,7 @@ if [ -f "$STATION_DIR/workbench/.contraband" ]; then
 fi
 
 # --- 4. Setup Script ---
-if [ -f "$STATION_DIR/cook/start.sh" ]; then
+if [ -f "$STATION_DIR/cook/hired.sh" ]; then
     if [ -f "$STATION_DIR/cook/personality.sh" ]; then
         source "$STATION_DIR/cook/personality.sh"
     fi
@@ -117,7 +117,7 @@ if [ -f "$STATION_DIR/cook/start.sh" ]; then
     else
         status "The cook is silently setting up..."
     fi
-    bash "$STATION_DIR/cook/start.sh"
+    bash "$STATION_DIR/cook/hired.sh"
 fi
 
 echo -e "\n${GREEN}  ✓ The '$STATION_NAME' Station is ready to bake!${NC}"

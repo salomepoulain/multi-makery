@@ -1,0 +1,18 @@
+#!/bin/bash
+# Global bake command router
+if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
+    # Try two-argument mode: try "$1" s="$2", fall back to call s="$1" d="$2"
+    if [ $# -ge 2 ] && [[ ! "$2" == *=* ]]; then
+        make -f Makefile "$1" s="$2" "$@" 2>/dev/null || \
+            make -f Makefile "call" s="$1" d="$2" "$@"
+    else
+        make -f Makefile "$@"
+    fi
+else
+    if [ -z "$1" ]; then
+        bash "$HOME/.makery/office/open_makery.sh"
+    else
+        echo -e "\033[1;31mNo kitchen found here. Type 'bake' to build one.\033[0m"
+        exit 1
+    fi
+fi

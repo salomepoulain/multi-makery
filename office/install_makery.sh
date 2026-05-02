@@ -8,7 +8,15 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/salomepoulain/multi-makery"
-RELEASE_TAG="v0.1.0"                    # <- update this for each release
+
+# Fetch the latest release tag dynamically
+RELEASE_TAG=$(curl -sSL "https://api.github.com/repos/salomepoulain/multi-makery/releases/latest" | \
+  grep -oP '"tag_name":\s*"\K[^"]+' || echo "v0.1.0")
+if [ -z "$RELEASE_TAG" ]; then
+  echo -e "\033[1;31mFailed to fetch latest release tag, defaulting to v0.1.0\033[0m"
+  RELEASE_TAG="v0.1.0"
+fi
+
 TARBALL_NAME="multi-makery-${RELEASE_TAG}.tar.gz"
 CHECKSUM_NAME="${TARBALL_NAME}.sha256"
 HQ_DIR="$HOME/.makery"
@@ -55,35 +63,7 @@ rm "$TMP_TARBALL" "$TMP_CHECKSUM"
 
 # Install the global binary
 echo "Installing global $BINARY_NAME to $BIN_DIR ..."
-cat > "$BIN_DIR/$BINARY_NAME" << 'BINARY_EOF'
-#!/bin/bash
-# Global bake command router
-if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
-    COMMAND="${1:-menu}"
-    STATION="${2:-}"
-    case "$COMMAND" in
-        first|burnt|fresh|germs)
-            shift 2
-            make -f Makefile "$COMMAND" s="$STATION" "$@"
-            ;;
-        *)
-            if [ -n "$2" ] && [[ ! "$2" == *=* ]]; then
-                make -f Makefile "$1-$2" "$@"
-            else
-                make -f Makefile "$COMMAND" "$@"
-            fi
-            ;;
-    esac
-else
-    if [ -z "$1" ]; then
-        bash "$HOME/.makery/office/open_makery.sh"
-    else
-        echo -e "\033[1;31mNo kitchen found here. Type 'bake' to build one.\033[0m"
-        exit 1
-    fi
-fi
-BINARY_EOF
-
+cp "$HQ_DIR/office/cabinet/bake" "$BIN_DIR/$BINARY_NAME"
 chmod +x "$BIN_DIR/$BINARY_NAME"
 
 echo

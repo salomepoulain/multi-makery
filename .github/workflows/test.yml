@@ -36,37 +36,16 @@ jobs:
           cp -r ${{ github.workspace }}/kitchen $HOME/.makery/
           cp -r ${{ github.workspace }}/office $HOME/.makery/
           mkdir -p $HOME/.local/bin
-          # Create bake script from local template
-          cat > $HOME/.local/bin/bake << 'EOF'
-          #!/bin/bash
-          if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
-              COMMAND="${1:-menu}"
-              STATION="${2:-}"
-              case "$COMMAND" in
-                  first|burnt|fresh|germs)
-                      shift 2
-                      make -f Makefile "$COMMAND" s="$STATION" "$@"
-                      ;;
-                  *)
-                      if [ -n "$2" ] && [[ ! "$2" == *=* ]]; then
-                          make -f Makefile "$1-$2" "$@"
-                      else
-                          make -f Makefile "$COMMAND" "$@"
-                      fi
-                      ;;
-              esac
-          else
-              if [ -z "$1" ]; then
-                  bash "$HOME/.makery/office/open_makery.sh"
-              else
-                  echo "No kitchen found here."
-                  exit 1
-              fi
-          fi
-          EOF
+          # Use the new bake script from cabinet
+          cp $HOME/.makery/office/cabinet/bake $HOME/.local/bin/bake
           chmod +x $HOME/.local/bin/bake
           export PATH="$HOME/.local/bin:$PATH"
           # Test bake in a new project
           mkdir -p /tmp/test-bake && cd /tmp/test-bake
           bake
           bake germs
+
+      - name: Run shell script tests
+        run: |
+          bash ${{ github.workspace }}/tests/test_bake_routing.sh
+          bash ${{ github.workspace }}/tests/test_headchef_commands.sh

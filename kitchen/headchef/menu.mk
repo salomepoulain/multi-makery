@@ -39,4 +39,9 @@ fresh::
 all::
 	@bash .makery/kitchen/headchef/orders/all.sh
 
+call::
+	@STATION="$(s)"; \
+	DISH="$(d)"; \
+	cd .makery/kitchen/stations/$$STATION && make -f menu.mk $$DISH
+
 help:: menu

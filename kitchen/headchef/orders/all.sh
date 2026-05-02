@@ -4,7 +4,7 @@
 # ============================================================================
 
 echo -e "\033[1;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;31m  BAKING ALL COOKS AT ONCE 💥 (Total Kitchen Destruction) \033[0m"
+echo -e "\033[1;31m   EVERYONE IS COOKED... 💥 (Total Kitchen Destruction) \033[0m"
 echo -e "\033[1;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 
 read -p "Are you absolutely sure you want to bake everything at once? The ovens will explode. (y/N) " -n 1 -r
@@ -14,14 +14,14 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-# Run quit.sh on all cooks to ensure system changes are reverted first
+# Run fired.sh on all cooks to ensure system changes are reverted first
 echo "  [.] The Head Chef has lost their mind. Baking all chefs..."
 for dir in .makery/kitchen/stations/*/; do
     if [ ! -d "$dir" ]; then continue; fi
     STATION_NAME=$(basename "$dir")
-    if [ -f "$dir/cook/quit.sh" ]; then
-        echo "  [.] Teardown protocol at the '$STATION_NAME' station (running quit.sh)..."
-        bash "$dir/cook/quit.sh"
+    if [ -f "$dir/cook/fired.sh" ]; then
+        echo "  [.] Teardown protocol at the '$STATION_NAME' station (running fired.sh)..."
+        bash "$dir/cook/fired.sh"
     fi
 done
 

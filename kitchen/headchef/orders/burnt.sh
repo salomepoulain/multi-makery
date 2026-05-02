@@ -22,7 +22,7 @@ if [ ! -d "$STATION_DIR" ]; then
 fi
 
 # 1. The Teardown Script (System Purge)
-if [ -f "$STATION_DIR/cook/quit.sh" ]; then
+if [ -f "$STATION_DIR/cook/fired.sh" ]; then
     # Load personality if it exists
     if [ -f "$STATION_DIR/cook/personality.sh" ]; then
         source "$STATION_DIR/cook/personality.sh"
@@ -34,7 +34,7 @@ if [ -f "$STATION_DIR/cook/quit.sh" ]; then
         echo "  [.] The cook is silently tearing down their system links..."
     fi
 
-    bash "$STATION_DIR/cook/quit.sh"
+    bash "$STATION_DIR/cook/fired.sh"
 fi
 
 # 2. Local Cleanup
