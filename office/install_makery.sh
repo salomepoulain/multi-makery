@@ -11,7 +11,7 @@ REPO_URL="https://github.com/salomepoulain/multi-makery"
 
 # Fetch the latest release tag dynamically
 RELEASE_TAG=$(curl -sSL "https://api.github.com/repos/salomepoulain/multi-makery/releases/latest" | \
-  grep -oE '"tag_name":\s*"[^"]+' | sed 's/"tag_name":\s*"\(.*\)"/\1/' || echo "v0.1.0")
+  grep '"tag_name"' | sed 's/.*"tag_name": "\([^"]*\)".*/\1/' || echo "v0.1.0")
 if [ -z "$RELEASE_TAG" ]; then
   echo -e "\033[1;31mFailed to fetch latest release tag, defaulting to v0.1.0\033[0m"
   RELEASE_TAG="v0.1.0"

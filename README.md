@@ -34,6 +34,13 @@ Hidden workspace
 ### Option 1: Install with `bake` (global, recommended)
 
 Install the `bake` command once per machine:
+
+**One-liner (quick):**
+```bash
+curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/office/install_makery.sh | bash
+```
+
+**Step-by-step (verify hash first):**
 ```bash
 curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/office/install_makery.sh -o install_makery.sh
 sha256sum install_makery.sh
