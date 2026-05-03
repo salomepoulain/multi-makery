@@ -19,7 +19,7 @@ jobs:
         run: |
           shellcheck office/install_makery.sh
           shellcheck office/open_makery.sh
-          shellcheck .makery/kitchen/headchef/orders/*.sh
+          shellcheck kitchen/headchef/orders/*.sh
 
       - name: Test open_makery.sh (make-only setup)
         run: |
