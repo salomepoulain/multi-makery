@@ -10,8 +10,8 @@
 
 - `.makery` is a tiny bakery that lives in your repository.
 - The **Head Chef** (`.makery/kitchen/headchef`) is the main orchestrator.
-- **Stations** are workspaces where specialized **Skills** get baked — each Station focuses on one kind of action and brings its own dependencies.
-- You **order Skills** from the menu with `bake`.
+- **Stations** are workspaces where specialized **Recipes** get baked — each Station focuses on one kind of action and brings its own dependencies.
+- You **order Recipes** from the menu with `bake`.
 
 When you order a new Dish (`first <name>`)
 - The Head Chef hires the appropriate Station.
@@ -110,22 +110,22 @@ Most users will prefer `bake` for the convenience, but `make` works as a fallbac
 
 ---
 
-## Available Skills (station structure)
+## Available Recipes (station structure)
 
-A Station is a regular Makefile with explicit targets and comments. It works standalone — just `cd` to the station directory and run `make <skill>`.
+A Station is a regular Makefile with explicit targets and comments. It works standalone — just `cd` to the station directory and run `make <recipe>`.
 
 ```
 station-name/
-├── menu.mk                  # Makefile with menu:: and skill targets
+├── menu.mk                  # Makefile with menu:: and recipe targets
 ├── cook/
 │   ├── personality.sh       # Cook identity (icon, name, color)
 │   ├── contract/
 │   │   ├── .prerequisite    # Required system tools (e.g., python, node)
 │   │   ├── hired.sh         # Runs once when the Station is hired
 │   │   └── fired.sh         # Runs once when the Station is fired
-│   └── skills/
-│       ├── example.sh       # Example skill (bake call s=<name> d=example)
-│       └── custom.sh        # Custom skill
+│   └── recipes/
+│       ├── example.sh       # Example recipe (bake call s=<name> d=example)
+│       └── custom.sh        # Custom recipe
 └── workbench/
     ├── pantry/              # Static files copied to project root on hire
     ├── .contraband          # Entries appended to .gitignore
@@ -142,39 +142,39 @@ Stations live in a registry (default: `salomepoulain/makery-stations`). Use the 
 
 ### Writing a Station `menu.mk`
 
-Write a regular Makefile with a `menu::` double-colon target and your skill targets. The lifecycle scripts (`hired.sh`, `fired.sh`) are run directly by the Head Chef — they don't belong as Make targets in `menu.mk`.
+Write a regular Makefile with a `menu::` double-colon target and your recipe targets. The lifecycle scripts (`hired.sh`, `fired.sh`) are run directly by the Head Chef — they don't belong as Make targets in `menu.mk`.
 
 ```makefile
 # station-name/menu.mk
-# Standalone Makefile — works with: cd .makery/kitchen/stations/<name> && make <skill>
+# Standalone Makefile — works with: cd .makery/kitchen/stations/<name> && make <recipe>
 
-# Skills defined below are run via: bake call s=<station> d=<skill>
+# Recipes defined below are run via: bake call s=<station> d=<recipe>
 # (first, fresh, burnt are managed by the Head Chef)
 
 menu::
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo "  my-station Station"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  STATION SKILLS"
-	@echo "    bake my-station example    Run the example skill"
+	@echo "  STATION RECIPES"
+	@echo "    bake my-station example    Run the example recipe"
 	@echo ""
 
 # example: Run an example task
 example:
-	@bash cook/skills/example.sh
+	@bash cook/recipes/example.sh
 ```
 
-The `menu::` double-colon rule appends to the Head Chef's `menu::` — so `bake menu` shows your station's section after the core operations. Replace `my-station` with your actual station name and list all your skills in the echo block.
+The `menu::` double-colon rule appends to the Head Chef's `menu::` — so `bake menu` shows your station's section after the core operations. Replace `my-station` with your actual station name and list all your recipes in the echo block.
 
-The headchef provides a `call` target that routes to stations. Use `make call s=<station> d=<skill>` or let `bake` handle routing automatically.
+The headchef provides a `call` target that routes to stations. Use `make call s=<station> d=<recipe>` or let `bake` handle routing automatically.
 
 ### Station structure requirements
 
 Each Station provides:
-- `menu.mk` (copy from `office/station-template/menu.mk`, update the station name, and add skill targets),
+- `menu.mk` (copy from `office/station-template/menu.mk`, update the station name, and add recipe targets),
 - `cook/contract/hired.sh` and `cook/contract/fired.sh` for setup and teardown,
 - `cook/contract/.prerequisite` listing required system tools,
-- `cook/skills/` for skill scripts,
+- `cook/recipes/` for recipe scripts,
 - a `workbench/` with `.contraband`, `.dishsoap`, and optionally `pantry/` for static files.
 
 ---
