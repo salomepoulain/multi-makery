@@ -3,34 +3,40 @@
 #  HEAD CHEF: ALL (Bake everything, overload the ovens)
 # ============================================================================
 
-echo -e "\033[1;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;31m   EVERYONE IS COOKED... 💥 (Total Kitchen Destruction) \033[0m"
-echo -e "\033[1;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
-read -p "Are you absolutely sure you want to bake everything at once? The ovens will explode. (y/N) " -n 1 -r
-echo
+STARTER "BAKING ALL, EVERYONE IS COOKED... (Total Kitchen Destruction)"
+
+
+KITCHEN_ROOT="$(dirname "${BASH_SOURCE[0]}")/../.."
+
+echo -ne "  ${HC_COLOR}$HC_ICON${NC} Are you absolutely sure? The ovens will explode. (y/N) "
+read -n 1 -r
+echo 
+echo ""
+
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "  [.] You turned off the ovens. The kitchen is safe."
+    SAY "You turned off the ovens. The kitchen is safe."
     exit 0
 fi
 
 # Run fired.sh on all cooks to ensure system changes are reverted first
-echo "  [.] The Head Chef has lost their mind. Baking all chefs..."
-for dir in .makery/kitchen/stations/*/; do
+SAY "Baking all chefs..."
+for dir in "$KITCHEN_ROOT/stations"/*/; do
     if [ ! -d "$dir" ]; then continue; fi
     STATION_NAME=$(basename "$dir")
-    if [ -f "$dir/cook/fired.sh" ]; then
-        echo "  [.] Teardown protocol at the '$STATION_NAME' station (running fired.sh)..."
-        bash "$dir/cook/fired.sh"
+    if [ -f "$dir/cook/contract/fired.sh" ]; then
+        SAY "Teardown protocol at the '$STATION_NAME' station (running fired.sh)..."
+        bash "$dir/cook/contract/fired.sh"
     fi
 done
 
-echo "  [.] The ovens have overloaded! The .makery is blowing up!"
-rm -rf .makery/
+SAY "The ovens have overloaded! Everything is blowing up!"
+rm -rf "$KITCHEN_ROOT/stations"
 
-echo "  [.] The menu and the front door are gone..."
+SAY "The menu and the front door are gone..."
 rm -f bake
 rm -f Makefile.thin
 
-echo -e "\n\033[1;32m  ✓ The Restaurant has burned to the ground.\033[0m"
-echo -e "\033[1;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n"
+SAY "The Bakery has burned to the ground."
+DONE

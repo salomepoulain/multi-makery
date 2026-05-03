@@ -6,7 +6,12 @@
 # using `bake first <this_cook>`.
 #
 # Use this script to set up local environments, download dependencies, etc.
+# You can speak during setup using SPEAK (shown with the cook's identity):
+#   SPEAK "Setting up my station and sharpening my knives..."
 
+source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
+
+SPEAK "Setting up my station and sharpening my knives..."
 
 # Example:
 # if [ ! -d ".venv" ]; then

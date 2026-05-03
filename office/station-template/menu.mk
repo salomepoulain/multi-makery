@@ -1,24 +1,15 @@
 # station-name/menu.mk
-# Standalone Makefile — works with: cd .makery/kitchen/stations/<name> && make <dish>
+# Standalone Makefile — works with: cd .makery/kitchen/stations/<name> && make <skill>
 
-# first: Hire the station (sets up environment)
-first:
-	@bash cook/first.sh
+# Skills defined below are run via: bake call s=<station> d=<skill>
+# (first, fresh, burnt are managed by the Head Chef)
 
-# fresh: Clean the station's workbench
-fresh:
-	@bash cook/fresh.sh
+menu::
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "  my-station Station"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "  STATION SKILLS"
+	@echo "    bake my-station <skill>    Description of the skill"
+	@echo ""
 
-# burnt: Fire the station
-burnt:
-	@bash cook/burnt.sh
-
-# Add your dishes below with comments:
-
-# deploy: Deploy the project
-# deploy:
-#	@bash dishes/deploy.sh
-
-# setup: Set up the environment
-# setup:
-#	@bash dishes/setup.sh
+# Add your skills below:

@@ -63,14 +63,10 @@ rm "$TMP_TARBALL" "$TMP_CHECKSUM"
 
 # Install the global binary (check if cabinet exists, else embed)
 echo "Installing global $BINARY_NAME to $BIN_DIR ..."
-if [ -f "$HQ_DIR/office/cabinet/bake" ]; then
-  cp "$HQ_DIR/office/cabinet/bake" "$BIN_DIR/$BINARY_NAME"
-else
-  echo "  (using embedded binary - cabinet not in this release)"
-  cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
+cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
 #!/bin/bash
 # Global bake command router
-if [ -f "Makefile" ] && grep -q "\.makery" Makefile; then
+if [ -f "Makefile" ] && grep -q "kitchen/headchef/menu.mk" Makefile; then
     # Try two-argument mode: try "$1" s="$2", fall back to call s="$1" d="$2"
     if [ $# -ge 2 ] && [[ ! "$2" == *=* ]]; then
         make -f Makefile "$1" s="$2" "$@" 2>/dev/null || \

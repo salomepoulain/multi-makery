@@ -21,6 +21,7 @@ if [ ! -f "Makefile" ]; then
 
 # Include the Head Chef's core menu
 -include .makery/kitchen/headchef/menu.mk
+-include .makery/kitchen/stations/*/menu.mk
 
 # Default goal: show the menu
 .DEFAULT_GOAL := menu
@@ -31,6 +32,7 @@ else
         echo "  [.] Adding Makery hooks to existing Makefile..."
         echo -e "\n# --- MAKERY HOOKS ---" >> Makefile
         echo "-include .makery/kitchen/headchef/menu.mk" >> Makefile
+        echo "-include .makery/kitchen/stations/*/menu.mk" >> Makefile
     fi
 fi
 

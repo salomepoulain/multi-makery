@@ -1,19 +1,5 @@
 # ============================================================================
-#  COOK: PERSONALITY & IDENTITY
-# ============================================================================
-
-# SELECT IDENTITY
-# -------------------------------------------------------------------
-COOK_ICON="◦"
-COOK_NAME="my-station"
-COOK_COLOR="$CYAN"
-
-_HC_ID_VISIBLE_OFFSET=0
-# -------------------------------------------------------------------
-
-
-# ============================================================================
-#  LINE COOK: PERSONALITY & FORMATTING HELPERS
+#  HEAD CHEF: PERSONALITY & FORMATTING HELPERS
 # ============================================================================
 
 
@@ -41,6 +27,7 @@ ITALIC='\033[3m'
 NC='\033[0m'
 
 
+
 # SELECT IDENTITY 
 # -----------------------------------------------------
 COOK_ICON="✦"
@@ -49,6 +36,8 @@ COOK_COLOR="$BROWN"
 
 _HC_ID_VISIBLE_OFFSET=1
 # ------------------------------------------------------
+
+
 
 
 # Fixed column width for the icon+name slot; pad with spaces when shorter
@@ -63,6 +52,28 @@ _term_cols() {
     local cols
     cols=$(stty size 2>/dev/null | awk '{print $2}')
     [[ "$cols" =~ ^[0-9]+$ ]] && echo "$cols" || echo 80
+}
+
+# --- Head Chef Functions ---
+STARTER() {
+    local rule cols
+    cols=$(_term_cols)
+    rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}')
+    rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}')
+    echo -e "${COOK_COLOR}${rule}${NC}"
+    echo -e "${COOK_COLOR}  $1${NC}"
+    echo -e "${COOK_COLOR}${rule_thin}${NC}\n"
+}
+
+DONE() {
+    local rule cols
+    cols=$(_term_cols)
+    rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}')
+    rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}')
+    echo -e "\n${COOK_COLOR}${rule_thin}${NC}"
+    echo -e "${COOK_COLOR}  BAKE FINISHED${NC}"
+    echo -e "${COOK_COLOR}${rule}${NC}"
+
 }
 
 SAY() {
