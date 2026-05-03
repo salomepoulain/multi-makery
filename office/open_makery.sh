@@ -30,9 +30,11 @@ else
     # Hook into existing Makefile if necessary
     if ! grep -q "\.makery/kitchen/headchef/menu\.mk" Makefile; then
         echo "  [.] Adding Makery hooks to existing Makefile..."
-        echo -e "\n# --- MAKERY HOOKS ---" >> Makefile
-        echo "-include .makery/kitchen/headchef/menu.mk" >> Makefile
-        echo "-include .makery/kitchen/stations/*/menu.mk" >> Makefile
+        {
+            echo -e "\n# --- MAKERY HOOKS ---"
+            echo "-include .makery/kitchen/headchef/menu.mk"
+            echo "-include .makery/kitchen/stations/*/menu.mk"
+        } >> Makefile
     fi
 fi
 
