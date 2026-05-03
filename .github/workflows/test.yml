@@ -17,9 +17,7 @@ jobs:
 
       - name: Lint scripts with shellcheck
         run: |
-          shellcheck office/install_makery.sh
-          shellcheck office/open_makery.sh
-          shellcheck kitchen/headchef/orders/*.sh
+          find . -name "*.sh" -not -path "./.git/*" -exec shellcheck -e SC1091 {} +
 
       - name: Test open_makery.sh (make-only setup)
         run: |
