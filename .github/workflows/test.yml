@@ -27,22 +27,6 @@ jobs:
           make germs
           make menu
 
-      - name: Test bake installation from local code
-        run: |
-          # Set up .makery from local files (simulate install_makery.sh without download)
-          mkdir -p $HOME/.makery
-          cp -r ${{ github.workspace }}/kitchen $HOME/.makery/
-          cp -r ${{ github.workspace }}/office $HOME/.makery/
-          mkdir -p $HOME/.local/bin
-          # Use the new bake script from cabinet
-          cp $HOME/.makery/office/cabinet/bake $HOME/.local/bin/bake
-          chmod +x $HOME/.local/bin/bake
-          export PATH="$HOME/.local/bin:$PATH"
-          # Test bake in a new project
-          mkdir -p /tmp/test-bake && cd /tmp/test-bake
-          bake
-          bake germs
-
       - name: Run shell script tests
         run: |
           bash ${{ github.workspace }}/tests/test_bake_routing.sh

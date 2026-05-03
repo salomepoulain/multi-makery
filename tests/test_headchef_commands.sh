@@ -31,7 +31,8 @@ cd "$TEMP_DIR"
 
 # Set up a minimal makery environment
 mkdir -p .makery/kitchen/headchef/orders
-cp -r "$PROJECT_ROOT/kitchen/headchef/menu.mk" .makery/kitchen/headchef/
+cp "$PROJECT_ROOT/kitchen/headchef/menu.mk" .makery/kitchen/headchef/
+cp "$PROJECT_ROOT/kitchen/headchef/personality.sh" .makery/kitchen/headchef/
 cp "$PROJECT_ROOT/kitchen/headchef/orders/inspo.sh" .makery/kitchen/headchef/orders/
 cp "$PROJECT_ROOT/kitchen/headchef/orders/fresh.sh" .makery/kitchen/headchef/orders/
 chmod +x .makery/kitchen/headchef/orders/*.sh

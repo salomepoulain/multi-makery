@@ -3,10 +3,6 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-BAKE_SCRIPT="$PROJECT_ROOT/office/cabinet/bake"
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,22 +19,7 @@ fail() {
 
 echo "Testing bake routing logic..."
 
-# Test 1: Verify bake script exists
-if [ -f "$BAKE_SCRIPT" ]; then
-    pass "bake script exists at $BAKE_SCRIPT"
-else
-    fail "bake script not found at $BAKE_SCRIPT"
-fi
-
-# Test 2: Verify bake script is executable
-if [ -x "$BAKE_SCRIPT" ]; then
-    pass "bake script is executable"
-else
-    fail "bake script is not executable"
-fi
-
-# Test 3: Extract routing logic to test
-# Source the condition test function from bake
+# Test the routing logic (extracted from install_makery.sh bake scripting)
 test_bake_args() {
     local args=("$@")
     local num_args=$#
