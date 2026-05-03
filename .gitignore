@@ -32,3 +32,5 @@ htmlcov/
 # Claude (personal config)
 .claude/
 .git/
+
+CLAUDE.md

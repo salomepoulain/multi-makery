@@ -18,30 +18,26 @@ menu::
 	@echo ""
 
 inspo::
-	@bash kitchen/headchef/orders/inspo.sh
-
-concrete::
-	@bash office/station-template/cook/personality.sh make
-	@$(MAKE) menu
+	@bash .makery/kitchen/headchef/orders/inspo.sh
 
 first::
-	@bash kitchen/headchef/orders/first.sh $(s)
+	@bash .makery/kitchen/headchef/orders/first.sh $(s)
 
 burnt::
-	@bash kitchen/headchef/orders/burnt.sh $(s)
+	@bash .makery/kitchen/headchef/orders/burnt.sh $(s)
 
 germs::
-	@bash kitchen/headchef/orders/fresh.sh
+	@bash .makery/kitchen/headchef/orders/fresh.sh
 
 fresh::
-	@bash kitchen/headchef/orders/fresh.sh $(s)
+	@bash .makery/kitchen/headchef/orders/fresh.sh $(s)
 
 all::
-	@bash kitchen/headchef/orders/all.sh
+	@bash .makery/kitchen/headchef/orders/all.sh
 
 call::
 	@STATION="$(s)"; \
 	DISH="$(d)"; \
-	cd kitchen/stations/$$STATION && make -f menu.mk $$DISH
+	cd .makery/kitchen/stations/$$STATION && make -f menu.mk $$DISH
 
 help:: menu
