@@ -22,7 +22,7 @@ fail() {
 
 # Create temp directory for testing
 TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 echo "Testing headchef commands..."
 echo "Using temp directory: $TEMP_DIR"

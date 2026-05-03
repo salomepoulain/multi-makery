@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
 # Custom skill to be run with: bake call s=<station> d=custom
 
 # Source personality for cook-specific identity

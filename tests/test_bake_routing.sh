@@ -54,22 +54,46 @@ test_bake_args() {
 
 # Test routing cases
 result=$(test_bake_args "first" "python")
-[ "$result" = "try_first_then_call" ] && pass "first python -> try_first_then_call" || fail "first python routing"
+if [ "$result" = "try_first_then_call" ]; then
+    pass "first python -> try_first_then_call"
+else
+    fail "first python routing"
+fi
 
 result=$(test_bake_args "python" "deploy")
-[ "$result" = "try_first_then_call" ] && pass "python deploy -> try_first_then_call" || fail "python deploy routing"
+if [ "$result" = "try_first_then_call" ]; then
+    pass "python deploy -> try_first_then_call"
+else
+    fail "python deploy routing"
+fi
 
 result=$(test_bake_args "first" "s=python")
-[ "$result" = "pass_through" ] && pass "first s=python -> pass_through" || fail "first s=python routing"
+if [ "$result" = "pass_through" ]; then
+    pass "first s=python -> pass_through"
+else
+    fail "first s=python routing"
+fi
 
 result=$(test_bake_args "germs")
-[ "$result" = "pass_through" ] && pass "germs -> pass_through" || fail "germs routing"
+if [ "$result" = "pass_through" ]; then
+    pass "germs -> pass_through"
+else
+    fail "germs routing"
+fi
 
 result=$(test_bake_args "menu")
-[ "$result" = "pass_through" ] && pass "menu -> pass_through" || fail "menu routing"
+if [ "$result" = "pass_through" ]; then
+    pass "menu -> pass_through"
+else
+    fail "menu routing"
+fi
 
 result=$(test_bake_args "first" "python" "extra")
-[ "$result" = "try_first_then_call" ] && pass "first python extra -> try_first_then_call" || fail "first python extra routing"
+if [ "$result" = "try_first_then_call" ]; then
+    pass "first python extra -> try_first_then_call"
+else
+    fail "first python extra routing"
+fi
 
 echo ""
 echo "All bake routing tests passed!"
