@@ -26,7 +26,7 @@ cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 
 # 2. Create the internal menu wrapper (used by bake, keeps .makery self-contained)
 cat > .makery/menu.mk << 'EOF'
--include kitchen/headchef/menu.mk
+-include .makery/kitchen/headchef/menu.mk
 help:: menu
 EOF
 

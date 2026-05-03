@@ -3,18 +3,18 @@
 # ============================================================================
 
 menu::
-	@source .makery/kitchen/headchef/personality.sh && STARTER "The Head Chef's Menu (multi-makery)" && \
+	@bash -c 'source .makery/kitchen/headchef/personality.sh && STARTER "The Head Chef'\''s Menu (multi-makery)" && \
 		echo "  CORE OPERATIONS" && \
-		ITEM "bake first <name>" "Hire a cook and open their new station (e.g. 'python')" && \
+		ITEM "bake first <name>" "Hire a cook and open their new station (e.g. '\''python'\'')" && \
 		ITEM "bake burnt <name>" "Fire a cook, close their station, and throw out recipes" && \
 		ITEM "bake inspo" "Inspiration: list all available stations at the agency" && \
 		ITEM "bake germs" "Health Inspector prep: scrub all workbenches" && \
 		ITEM "bake fresh <name>" "Force the cook to scrub their specific workbench" && \
 		ITEM "bake all" "Bake everything at once, exploding the kitchen" && \
 		echo "" && \
-		echo "  (Standard 'make' fallback is supported: e.g. 'make first s=python')" && \
+		echo "  (Standard '\''make'\'' fallback is supported: e.g. '\''make first s=python'\'')" && \
 		echo "" && \
-		FINISHED
+		FINISHED'
 
 inspo::
 	@bash .makery/kitchen/headchef/orders/inspo.sh

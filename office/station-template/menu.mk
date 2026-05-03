@@ -5,11 +5,11 @@
 # (first, fresh, burnt are managed by the Head Chef)
 
 menu::
-	@source cook/personality.sh && STARTER "$${COOK_NAME} Station" && \
+	@bash -c 'source cook/personality.sh && STARTER "$$COOK_NAME Station" && \
 		echo "  STATION RECIPES" && \
-		ITEM "bake $${COOK_NAME} <recipe>" "Description of the recipe" && \
+		ITEM "bake $$COOK_NAME <recipe>" "Description of the recipe" && \
 		echo "" && \
-		FINISHED
+		FINISHED'
 
 # Add your recipes below:
 
