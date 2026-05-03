@@ -30,7 +30,7 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
   echo -e "\n\033[1;33mNOTE: $HOME/.local/bin is not in your PATH.\033[0m"
   echo "Add it with:"
   echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
-  echo "and consider adding that line to your shell profile.\n"
+  printf "and consider adding that line to your shell profile.\n"
 fi
 
 mkdir -p "$HQ_DIR" "$BIN_DIR"
@@ -83,7 +83,6 @@ else
     fi
 fi
 BAKE_EOF
-fi
 chmod +x "$BIN_DIR/$BINARY_NAME"
 
 echo
