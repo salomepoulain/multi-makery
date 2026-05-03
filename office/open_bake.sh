@@ -24,8 +24,11 @@ STARTER "LAYING THE FOUNDATION (Bake-only Setup)..."
 mkdir -p .makery/kitchen
 cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 
-# 2. Create the internal menu (used by bake, keeps .makery self-contained)
-cp "$MAKERY_HOME/kitchen/headchef/menu.mk" ".makery/menu.mk"
+# 2. Create the internal menu wrapper (used by bake, keeps .makery self-contained)
+cat > .makery/menu.mk << 'EOF'
+-include kitchen/headchef/menu.mk
+help:: menu
+EOF
 
 # 3. Set permissions for the Head Chef's orders
 chmod +x .makery/kitchen/headchef/orders/*.sh

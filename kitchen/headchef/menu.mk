@@ -3,19 +3,18 @@
 # ============================================================================
 
 menu::
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  The Head Chef's Menu (multi-makery)"
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  CORE OPERATIONS"
-	@echo "    bake first <name>    Hire a cook and open their new station (e.g. 'python')"
-	@echo "    bake burnt <name>    Fire a cook, close their station, and throw out recipes"
-	@echo "    bake inspo           Inspiration: list all available stations at the agency"
-	@echo "    bake germs           Health Inspector prep: scrub all workbenches"
-	@echo "    bake fresh <name>    Force the cook to scrub their specific workbench"
-	@echo "    bake all             Bake everything at once, exploding the kitchen"
-	@echo ""
-	@echo "  (Standard 'make' fallback is supported: e.g. 'make first s=python')"
-	@echo ""
+	@source .makery/kitchen/headchef/personality.sh && STARTER "The Head Chef's Menu (multi-makery)" && \
+		echo "  CORE OPERATIONS" && \
+		ITEM "bake first <name>" "Hire a cook and open their new station (e.g. 'python')" && \
+		ITEM "bake burnt <name>" "Fire a cook, close their station, and throw out recipes" && \
+		ITEM "bake inspo" "Inspiration: list all available stations at the agency" && \
+		ITEM "bake germs" "Health Inspector prep: scrub all workbenches" && \
+		ITEM "bake fresh <name>" "Force the cook to scrub their specific workbench" && \
+		ITEM "bake all" "Bake everything at once, exploding the kitchen" && \
+		echo "" && \
+		echo "  (Standard 'make' fallback is supported: e.g. 'make first s=python')" && \
+		echo "" && \
+		FINISHED
 
 inspo::
 	@bash .makery/kitchen/headchef/orders/inspo.sh

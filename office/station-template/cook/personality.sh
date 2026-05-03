@@ -1,23 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 # ============================================================================
-#  COOK: PERSONALITY & IDENTITY
+#  LINE COOK: PERSONALITY & IDENTITY
 # ============================================================================
-
-# SELECT IDENTITY
-# -------------------------------------------------------------------
-COOK_ICON="◦"
-COOK_NAME="my-station"
-COOK_COLOR="$CYAN"
-
-_HC_ID_VISIBLE_OFFSET=0
-# -------------------------------------------------------------------
-
-
-# ============================================================================
-#  LINE COOK: PERSONALITY & FORMATTING HELPERS
-# ============================================================================
-
 
 # --- Colors & Styling ---
 # Rainbow spectrum
@@ -43,13 +28,13 @@ ITALIC='\033[3m'
 NC='\033[0m'
 
 
-# SELECT IDENTITY 
+# SELECT IDENTITY (Override these in your station)
 # -----------------------------------------------------
 COOK_ICON="✦"
-COOK_NAME="headchef"
-COOK_COLOR="$BROWN"
+COOK_NAME="my-station"
+COOK_COLOR="$CYAN"
 
-_HC_ID_VISIBLE_OFFSET=1
+_HC_ID_VISIBLE_OFFSET=0
 # ------------------------------------------------------
 
 
@@ -88,4 +73,35 @@ SAY() {
             echo -e "${cont_indent}${ITALIC}${DIM}${line}${NC}"
         fi
     done
+}
+
+ITEM() {
+    local cols indent cmd_width desc_width
+    cols=$(_term_cols)
+    indent=4
+    cmd_width=28
+    desc_width=$(( cols - indent - cmd_width - 2 ))
+    [[ "$desc_width" -lt 10 ]] && desc_width=10
+
+    printf "  %-${cmd_width}s %s\n" "$1" "$2"
+}
+
+STARTER() {
+    local rule cols
+    cols=$(_term_cols)
+    rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}')
+    rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}')
+    echo -e "${COOK_COLOR}${rule}${NC}"
+    echo -e "${COOK_COLOR}  $1${NC}"
+    echo -e "${COOK_COLOR}${rule_thin}${NC}\n"
+}
+
+FINISHED() {
+    local rule cols
+    cols=$(_term_cols)
+    rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}')
+    rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}')
+    echo -e "\n${COOK_COLOR}${rule_thin}${NC}"
+    echo -e "${COOK_COLOR}  BAKE FINISHED${NC}"
+    echo -e "${COOK_COLOR}${rule}${NC}"
 }

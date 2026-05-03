@@ -5,12 +5,11 @@
 # (first, fresh, burnt are managed by the Head Chef)
 
 menu::
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  my-station Station"
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  STATION RECIPES"
-	@echo "    bake my-station <recipe>    Description of the recipe"
-	@echo ""
+	@source cook/personality.sh && STARTER "$${COOK_NAME} Station" && \
+		echo "  STATION RECIPES" && \
+		ITEM "bake $${COOK_NAME} <recipe>" "Description of the recipe" && \
+		echo "" && \
+		FINISHED
 
 # Add your recipes below:
 

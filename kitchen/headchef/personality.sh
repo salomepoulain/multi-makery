@@ -99,3 +99,14 @@ SAY() {
         fi
     done
 }
+
+ITEM() {
+    local cols indent cmd_width desc_width
+    cols=$(_term_cols)
+    indent=4
+    cmd_width=28
+    desc_width=$(( cols - indent - cmd_width - 2 ))
+    [[ "$desc_width" -lt 10 ]] && desc_width=10
+
+    printf "  %-${cmd_width}s %s\n" "$1" "$2"
+}
