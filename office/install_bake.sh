@@ -1,9 +1,10 @@
-#!/usr/bin/env bash
-# install_makery.sh — Global installer for multi-makery
-# Review this script before running:
-#   curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/install_makery.sh -o install_makery.sh
-#   sha256sum install_makery.sh
-#   bash install_makery.sh
+#!/bin/bash
+# ============================================================================
+#  INSTALL BAKE (Global installer for the bake command)
+# ============================================================================
+# This installs the `bake` command to ~/.local/bin and sets up the engine
+# in ~/.makery. The bake command uses .makery/menu.mk internally.
+# ============================================================================
 
 set -euo pipefail
 
@@ -61,7 +62,7 @@ echo "Checksum verified."
 tar -xzf "$TMP_TARBALL" -C "$HQ_DIR" --strip-components=1
 rm "$TMP_TARBALL" "$TMP_CHECKSUM"
 
-# Install the global binary (check if cabinet exists, else embed)
+# Install the global binary
 echo "Installing global $BINARY_NAME to $BIN_DIR ..."
 cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
 #!/bin/bash
@@ -76,7 +77,7 @@ if [ -d ".makery" ]; then
     fi
 else
     if [ -z "$1" ]; then
-        bash "$HOME/.makery/office/open_makery.sh"
+        bash "$HOME/.makery/office/open_bake.sh"
     else
         echo -e "\033[1;31mNo kitchen found here. Type 'bake' to build one.\033[0m"
         exit 1

@@ -31,45 +31,38 @@ Hidden workspace
 
 ## Getting Started
 
-### Option 1: Install with `bake` (global, recommended)
+There are two installation paths: one for `bake` users and one for `make` users.
 
-Install the `bake` command once per machine:
+### Path A: Using `bake` (recommended)
 
-**One-liner (quick):**
-```bash
-curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/office/install_makery.sh | bash
-```
+1. **Install the `bake` command globally:**
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/office/install_bake.sh | bash
+   ```
 
-**Step-by-step (verify hash first):**
-```bash
-curl -sSL https://raw.githubusercontent.com/salomepoulain/multi-makery/main/office/install_makery.sh -o install_makery.sh
-sha256sum install_makery.sh
-bash install_makery.sh
-```
-This installs `bake` to `~/.local/bin` and the engine to `~/.makery`.
+2. **In your project folder, initialize the kitchen:**
+   ```bash
+   bake  # Creates .makery/ with internal menu, no Makefile modification
+   ```
 
-Then in a new project folder:
-```bash
-bake
-```
-`bake` detects the missing kitchen and runs `open_makery.sh` to create `.makery/menu.mk` and the internal kitchen structure. Your project's `Makefile` is left untouched.
+Your project's `Makefile` stays untouched and can be committed to version control.
 
-### Option 2: Use `make` only (no global install)
+### Path B: Using `make` directly
 
-If you don't want to install `bake` globally, you can set up a single project manually:
+If you prefer to use `make` directly without installing `bake`:
 
 ```bash
-# 1. Clone multi-makery into your project (or download the files)
+# 1. Clone multi-makery temporarily
 git clone --depth 1 https://github.com/salomepoulain/multi-makery.git .makery-temp
 
-# 2. Set up the kitchen manually
-bash .makery-temp/office/open_makery.sh
+# 2. Set up the kitchen (creates Makefile with makery hooks)
+bash .makery-temp/office/open_make.sh
 
 # 3. Clean up
 rm -rf .makery-temp
 ```
 
-Now you can use `make` directly:
+Now use `make` directly:
 ```bash
 make first s=python       # Hire the python station
 make call s=python d=test  # Run a dish from a station
@@ -78,7 +71,7 @@ make germs                # Clean all workbenches
 make burnt s=python       # Fire the python station
 ```
 
-**Note:** Without `bake`, you lose auto-initialization and the simplified routing, but all core functionality works with `make` directly.
+**Note:** This modifies your project's `Makefile` to include makery targets.
 
 ---
 

@@ -1,13 +1,16 @@
 #!/bin/bash
 # ============================================================================
-#  OPEN MAKERY (Local Project Setup)
+#  OPEN BAKE (Kitchen setup for bake users only)
+# ============================================================================
+# This script initializes a kitchen for projects using the `bake` command.
+# The visible Makefile is left completely untouched.
 # ============================================================================
 
 # Determine where this script lives so we can find the kitchen
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MAKERY_HOME="$(dirname "$SCRIPT_DIR")"
 
-echo -e "\033[1;34m  LAYING THE FOUNDATION (Local Setup)... \033[0m"
+echo -e "\033[1;34m  LAYING THE FOUNDATION (Bake-only Setup)... \033[0m"
 
 # 1. Bring the Head Chef to this specific project
 mkdir -p .makery/kitchen
@@ -15,8 +18,6 @@ cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 
 # 2. Create the internal menu (used by bake, keeps .makery self-contained)
 cp "$MAKERY_HOME/kitchen/headchef/menu.mk" ".makery/menu.mk"
-
-# 3. The visible Makefile is left untouched - it's your project's file
 
 # 3. Set permissions for the Head Chef's orders
 chmod +x .makery/kitchen/headchef/orders/*.sh

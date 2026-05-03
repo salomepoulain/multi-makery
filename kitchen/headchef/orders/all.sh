@@ -39,6 +39,17 @@ SAY "The menu and the front door are gone..."
 rm -f bake
 rm -f Makefile.thin
 
+# Clean up .makery hooks from Makefile (if open_make was used)
+CURRENT_DIR="$(dirname "$KITCHEN_ROOT")"
+if [ -f "$CURRENT_DIR/Makefile" ]; then
+    if grep -q "# --- MAKERY HOOKS ---" "$CURRENT_DIR/Makefile"; then
+        SAY "Removing makery hooks from Makefile..."
+        # Remove the makery hooks section and everything after it
+        sed -i.bak '/^# --- MAKERY HOOKS ---$/,$ d' "$CURRENT_DIR/Makefile"
+        rm -f "$CURRENT_DIR/Makefile.bak"
+    fi
+fi
+
 SAY "Burning down the kitchen..."
 cd "$(dirname "$KITCHEN_ROOT")" || exit
 rm -rf .makery
