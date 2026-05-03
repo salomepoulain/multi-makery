@@ -40,4 +40,7 @@ call::
 	DISH="$(d)"; \
 	cd .makery/kitchen/stations/$$STATION && make -f menu.mk $$DISH
 
+# Include station menus if available (for use as .makery/menu.mk)
+-include .makery/kitchen/stations/*/menu.mk
+
 help:: menu

@@ -13,30 +13,10 @@ echo -e "\033[1;34m  LAYING THE FOUNDATION (Local Setup)... \033[0m"
 mkdir -p .makery/kitchen
 cp -r "$MAKERY_HOME/kitchen/headchef" ".makery/kitchen/"
 
-# 2. Generate the local Makefile
-if [ ! -f "Makefile" ]; then
-    echo "  [.] Creating new Makefile..."
-    cat << 'EOF' > Makefile
-.PHONY: menu first burnt germs fresh all call
+# 2. Create the internal menu (used by bake, keeps .makery self-contained)
+cp "$MAKERY_HOME/kitchen/headchef/menu.mk" ".makery/menu.mk"
 
-# Include the Head Chef's core menu
--include .makery/kitchen/headchef/menu.mk
--include .makery/kitchen/stations/*/menu.mk
-
-# Default goal: show the menu
-.DEFAULT_GOAL := menu
-EOF
-else
-    # Hook into existing Makefile if necessary
-    if ! grep -q "\.makery/kitchen/headchef/menu\.mk" Makefile; then
-        echo "  [.] Adding Makery hooks to existing Makefile..."
-        {
-            echo -e "\n# --- MAKERY HOOKS ---"
-            echo "-include .makery/kitchen/headchef/menu.mk"
-            echo "-include .makery/kitchen/stations/*/menu.mk"
-        } >> Makefile
-    fi
-fi
+# 3. The visible Makefile is left untouched - it's your project's file
 
 # 3. Set permissions for the Head Chef's orders
 chmod +x .makery/kitchen/headchef/orders/*.sh

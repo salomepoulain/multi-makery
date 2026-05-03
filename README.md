@@ -52,7 +52,7 @@ Then in a new project folder:
 ```bash
 bake
 ```
-`bake` detects the missing kitchen and runs `open_makery.sh` to create `.makery` and a local `Makefile`.
+`bake` detects the missing kitchen and runs `open_makery.sh` to create `.makery/menu.mk` and the internal kitchen structure. Your project's `Makefile` is left untouched.
 
 ### Option 2: Use `make` only (no global install)
 
@@ -99,14 +99,31 @@ make burnt s=python       # Fire the python station
 
 ## Bake vs. Make
 
-The `bake` command is a convenience wrapper around `make`. The core functionality lives in the `Makefile` and `.makery/kitchen/headchef/menu.mk`:
+There are two ways to use multi-makery:
 
-- **With `bake`**: Auto-initialization and the nice CLI UX. The bake script tries `make $1 s=$2` first, falling back to `make call s=$1 d=$2` for station dishes.
-  - `bake first python` → `make first s=python` (core commands)
-  - `bake python test` → `make call s=python d=test` (station dishes)
-- **With `make` directly**: Works too! Use `make first s=python` or `make call s=python d=test` — the `Makefile` includes all the headchef and station menus automatically.
+### Option A: `bake` (recommended for most users)
 
-Most users will prefer `bake` for the convenience, but `make` works as a fallback.
+`bake` uses an internal `.makery/menu.mk` and leaves your project's `Makefile` completely untouched. Your `Makefile` can be committed to version control without any makery modifications.
+
+- `bake first python` → `make -f .makery/menu.mk first s=python` (core commands)
+- `bake python test` → `make -f .makery/menu.mk call s=python d=test` (station dishes)
+
+### Option B: `make` directly (for Makefile integration)
+
+If you want to use `make` directly or integrate makery targets into your project's build system, manually add these lines to your `Makefile`:
+
+```makefile
+.PHONY: menu first burnt germs fresh all call
+
+-include .makery/kitchen/headchef/menu.mk
+-include .makery/kitchen/stations/*/menu.mk
+```
+
+Then use:
+- `make first s=python` (core commands)
+- `make call s=python d=test` (station dishes)
+
+This is useful if you want makery tasks alongside your existing Makefile targets, but requires your `Makefile` to be modified.
 
 ---
 

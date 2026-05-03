@@ -39,5 +39,9 @@ SAY "The menu and the front door are gone..."
 rm -f bake
 rm -f Makefile.thin
 
+SAY "Burning down the kitchen..."
+cd "$(dirname "$KITCHEN_ROOT")" || exit
+rm -rf .makery
+
 SAY "The Bakery has burned to the ground."
 FINISHED

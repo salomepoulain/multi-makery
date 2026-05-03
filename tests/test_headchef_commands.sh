@@ -29,7 +29,7 @@ echo "Using temp directory: $TEMP_DIR"
 
 cd "$TEMP_DIR"
 
-# Set up a minimal makery environment
+# Set up a minimal makery environment for make tests
 mkdir -p .makery/kitchen/headchef/orders
 cp "$PROJECT_ROOT/kitchen/headchef/menu.mk" .makery/kitchen/headchef/
 cp "$PROJECT_ROOT/kitchen/headchef/personality.sh" .makery/kitchen/headchef/
@@ -37,13 +37,16 @@ cp "$PROJECT_ROOT/kitchen/headchef/orders/inspo.sh" .makery/kitchen/headchef/ord
 cp "$PROJECT_ROOT/kitchen/headchef/orders/fresh.sh" .makery/kitchen/headchef/orders/
 chmod +x .makery/kitchen/headchef/orders/*.sh
 
-# Create a minimal Makefile
+# Create a minimal Makefile for make tests (user's Makefile path)
 cat > Makefile << 'EOF'
 .PHONY: menu germs
 
 -include .makery/kitchen/headchef/menu.mk
 .DEFAULT_GOAL := menu
 EOF
+
+# Also set up .makery/menu.mk for bake tests (internal menu path)
+cp "$PROJECT_ROOT/kitchen/headchef/menu.mk" .makery/menu.mk
 
 # Test 1: make menu
 if make menu 2>/dev/null | grep -q "Head Chef's Menu"; then
@@ -61,6 +64,13 @@ fi
 
 # Test 3: Verify the headchef menu.mk has the correct targets
 if grep -q "^menu::" "$PROJECT_ROOT/kitchen/headchef/menu.mk"; then
+
+# Test 4: Verify .makery/menu.mk works for bake path
+if make -f .makery/menu.mk menu 2>/dev/null | grep -q "Head Chef's Menu"; then
+    pass "make -f .makery/menu.mk menu works for bake path"
+else
+    fail "make -f .makery/menu.mk menu did not display expected content"
+fi
     pass "menu target defined in headchef/menu.mk"
 else
     fail "menu target not found in headchef/menu.mk"

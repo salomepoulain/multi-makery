@@ -67,12 +67,12 @@ cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
 #!/bin/bash
 # Global bake command router
 if [ -d ".makery" ]; then
-    # Try two-argument mode: try "$1" s="$2", fall back to call s="$1" d="$2"
+    # Use internal menu.mk, leaving project's Makefile untouched
     if [ $# -ge 2 ] && [[ ! "$2" == *=* ]]; then
-        make -f Makefile "$1" s="$2" "$@" 2>/dev/null || \
-            make -f Makefile "call" s="$1" d="$2" "$@"
+        make -f .makery/menu.mk "$1" s="$2" "$@" 2>/dev/null || \
+            make -f .makery/menu.mk "call" s="$1" d="$2" "$@"
     else
-        make -f Makefile "$@"
+        make -f .makery/menu.mk "$@"
     fi
 else
     if [ -z "$1" ]; then
