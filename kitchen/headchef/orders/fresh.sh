@@ -3,6 +3,7 @@
 #  HEAD CHEF: GERMS / FRESH (Health Inspector is coming)
 # ============================================================================
 
+# shellcheck source=../personality.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 STARTER "KILLING GERMS (Health Inspector Prep)"
@@ -12,7 +13,8 @@ STATIONS_DIR="$KITCHEN_ROOT/stations"
 
 clean_station() {
     local station_dir=$1
-    local station_name=$(basename "$station_dir")
+    local station_name
+    station_name=$(basename "$station_dir")
     local cleaned=false
 
     if [ -f "$station_dir/workbench/.dishsoap" ]; then
@@ -53,4 +55,5 @@ else
 fi
 
 SAY "The kitchen is spotless. We will pass the inspection."
-DONE
+
+FINISHED

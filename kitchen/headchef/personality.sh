@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # ============================================================================
 #  HEAD CHEF: PERSONALITY & FORMATTING HELPERS
 # ============================================================================
@@ -5,26 +6,26 @@
 
 # --- Colors & Styling ---
 # Rainbow spectrum
-RED='\033[1;31m'
-ORANGE='\033[38;5;208m'
-YELLOW='\033[1;33m'
-GREEN='\033[1;32m'
-CYAN='\033[1;36m'
-BLUE='\033[1;34m'
-PURPLE='\033[1;35m'
-MAGENTA='\033[1;35m'
+export RED='\033[1;31m'
+export ORANGE='\033[38;5;208m'
+export YELLOW='\033[1;33m'
+export GREEN='\033[1;32m'
+export CYAN='\033[1;36m'
+export BLUE='\033[1;34m'
+export PURPLE='\033[1;35m'
+export MAGENTA='\033[1;35m'
 
 # Neutrals
-BLACK='\033[1;30m'
-WHITE='\033[1;37m'
-GRAY='\033[1;90m'
-BROWN='\033[38;5;94m'
+export BLACK='\033[1;30m'
+export WHITE='\033[1;37m'
+export GRAY='\033[1;90m'
+export BROWN='\033[38;5;94m'
 
 # Text styling
-BOLD='\033[1m'
-DIM='\033[2m'
-ITALIC='\033[3m'
-NC='\033[0m'
+export BOLD='\033[1m'
+export DIM='\033[2m'
+export ITALIC='\033[3m'
+export NC='\033[0m'
 
 
 
@@ -65,7 +66,7 @@ STARTER() {
     echo -e "${COOK_COLOR}${rule_thin}${NC}\n"
 }
 
-DONE() {
+FINISHED() {
     local rule cols
     cols=$(_term_cols)
     rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}')

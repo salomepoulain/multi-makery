@@ -3,6 +3,7 @@
 #  HEAD CHEF: BURNT (Tear down a Station)
 # ============================================================================
 
+# shellcheck source=../personality.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 if [ -z "$1" ]; then
@@ -24,6 +25,7 @@ STARTER "BAKING BURNT $STATION_NAME"
 if [ -f "$STATION_DIR/cook/contract/fired.sh" ]; then
     # Load personality if it exists
     if [ -f "$STATION_DIR/cook/personality.sh" ]; then
+        # shellcheck source=/dev/null
         source "$STATION_DIR/cook/personality.sh"
     fi
 
@@ -42,9 +44,9 @@ if [ -f "$STATION_DIR/workbench/.dishsoap" ]; then
     done < "$STATION_DIR/workbench/.dishsoap"
 fi
 
-# 3. Delete
 SAY "Demolishing the physical station..."
 rm -rf "$STATION_DIR"
 
 SAY "The '$STATION_NAME' cook is permanently fired and their station is closed."
-DONE
+
+FINISHED

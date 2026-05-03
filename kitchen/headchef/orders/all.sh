@@ -3,6 +3,7 @@
 #  HEAD CHEF: ALL (Bake everything, overload the ovens)
 # ============================================================================
 
+# shellcheck source=../personality.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 STARTER "BAKING ALL, EVERYONE IS COOKED... (Total Kitchen Destruction)"
@@ -39,4 +40,4 @@ rm -f bake
 rm -f Makefile.thin
 
 SAY "The Bakery has burned to the ground."
-DONE
+FINISHED

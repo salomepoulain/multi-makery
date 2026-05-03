@@ -3,6 +3,6 @@ repos:
     hooks:
       - id: shellcheck
         name: shellcheck
-        entry: shellcheck
+        entry: shellcheck -e SC1091
         language: system
         types: [shell]

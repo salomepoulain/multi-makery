@@ -3,6 +3,7 @@
 #  HEAD CHEF: FIRST (The Recruiter)
 # ============================================================================
 
+# shellcheck source=../personality.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 # --- validation ---
@@ -37,12 +38,12 @@ cd "$TMP_DIR" || exit 1
 git sparse-checkout set "stations/$STATION_NAME" > /dev/null 2>&1
 
 if [ ! -d "stations/$STATION_NAME" ]; then
-    cd - > /dev/null
+    cd - > /dev/null || exit
     rm -rf "$TMP_DIR"
     error "The '$STATION_NAME' station doesn't exist in the Registry."
 fi
 
-cd - > /dev/null
+cd - > /dev/null || exit
 mkdir -p "$KITCHEN_ROOT/stations"
 mv "$TMP_DIR/stations/$STATION_NAME" "$KITCHEN_ROOT/stations/"
 rm -rf "$TMP_DIR"
@@ -95,13 +96,11 @@ fi
 # --- 4. Setup Script ---
 if [ -f "$STATION_DIR/cook/contract/hired.sh" ]; then
     if [ -f "$STATION_DIR/cook/personality.sh" ]; then
+        # shellcheck source=/dev/null
         source "$STATION_DIR/cook/personality.sh"
     fi
 
     bash "$STATION_DIR/cook/contract/hired.sh"
 fi
 
-echo ""
-SAY "The '$STATION_NAME' Station is ready to bake!"
-DONE
-echo ""
+FINISHED
