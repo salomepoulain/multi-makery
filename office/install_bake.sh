@@ -6,6 +6,14 @@
 # in ~/.makery. The bake command uses .makery/menu.mk internally.
 # ============================================================================
 
+# --- Formatting Helpers ---
+_term_cols() { local cols; cols=$(stty size 2>/dev/null | awk '{print $2}'); [[ "$cols" =~ ^[0-9]+$ ]] && echo "$cols" || echo 80; }
+WHITE='\033[1;37m'
+NC='\033[0m'
+
+STARTER() { local rule cols; cols=$(_term_cols); rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}'); rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}'); echo -e "${WHITE}${rule}${NC}"; echo -e "${WHITE}  $1${NC}"; echo -e "${WHITE}${rule_thin}${NC}"; }
+FINISHED() { local rule cols; cols=$(_term_cols); rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}'); rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}'); echo -e "\n${WHITE}${rule_thin}${NC}"; echo -e "${WHITE}  $1${NC}"; echo -e "${WHITE}${rule}${NC}"; }
+
 set -euo pipefail
 
 REPO_URL="https://github.com/salomepoulain/multi-makery"
@@ -24,7 +32,7 @@ HQ_DIR="$HOME/.makery"
 BIN_DIR="$HOME/.local/bin"
 BINARY_NAME="bake"
 
-echo -e "\033[1;35m==> Building global Makery headquarters...\033[0m"
+STARTER "Building global Makery headquarters..."
 
 # Warn about PATH
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
@@ -87,6 +95,6 @@ BAKE_EOF
 chmod +x "$BIN_DIR/$BINARY_NAME"
 
 echo
-echo -e "\033[1;32m==> Global Makery installed to $BIN_DIR/$BINARY_NAME\033[0m"
+FINISHED "Global Makery installed to $BIN_DIR/$BINARY_NAME"
 echo "Ensure $BIN_DIR is in your PATH."
 echo "Next: create a kitchen with 'bake' inside a project folder."

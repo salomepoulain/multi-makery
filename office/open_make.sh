@@ -6,11 +6,19 @@
 # A Makefile with makery includes will be created in your project.
 # ============================================================================
 
+# --- Formatting Helpers ---
+_term_cols() { local cols; cols=$(stty size 2>/dev/null | awk '{print $2}'); [[ "$cols" =~ ^[0-9]+$ ]] && echo "$cols" || echo 80; }
+WHITE='\033[1;37m'
+NC='\033[0m'
+
+STARTER() { local rule cols; cols=$(_term_cols); rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}'); rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}'); echo -e "${WHITE}${rule}${NC}"; echo -e "${WHITE}  $1${NC}"; echo -e "${WHITE}${rule_thin}${NC}"; }
+FINISHED() { local rule cols; cols=$(_term_cols); rule=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"━";print""}'); rule_thin=$(awk -v n="$cols" 'BEGIN{while(i++<n)printf"┈";print""}'); echo -e "\n${WHITE}${rule_thin}${NC}"; echo -e "${WHITE}  $1${NC}"; echo -e "${WHITE}${rule}${NC}"; }
+
 # Determine where this script lives so we can find the kitchen
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MAKERY_HOME="$(dirname "$SCRIPT_DIR")"
 
-echo -e "\033[1;34m  LAYING THE FOUNDATION (Make Setup)... \033[0m"
+STARTER "LAYING THE FOUNDATION (Make Setup)..."
 
 # 1. Bring the Head Chef to this specific project
 mkdir -p .makery/kitchen
@@ -56,4 +64,4 @@ fi
 # 5. Safety check: Ensure no local 'bake' file clutters the workspace
 rm -f bake 2>/dev/null
 
-echo -e "\033[1;32m  ✓ Local kitchen is open and ready.\033[0m"
+FINISHED "✓ Local kitchen is open and ready."
