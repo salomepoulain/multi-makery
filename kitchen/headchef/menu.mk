@@ -38,7 +38,7 @@ call::
 # Build station menus dynamically (append after headchef menu)
 menu::
 	@for station_dir in .makery/kitchen/stations/*/; do \
-		[ -f "$$station_dir/menu.mk" ] && $(MAKE) -f "$$station_dir/menu.mk" menu; \
+		[ -d "$$station_dir" ] && [ -f "$$station_dir/menu.mk" ] && $(MAKE) -f "$$station_dir/menu.mk" menu || true; \
 	done
 
 help:: menu
