@@ -19,7 +19,7 @@ clean_station() {
 
     if [ -f "$station_dir/workbench/.dishsoap" ]; then
         while IFS= read -r path_to_clean || [ -n "$path_to_clean" ]; do
-            # FIXED: Added quotes around the # to prevent Bash syntax errors
+            # FIXED: Added quotes around the # to prevent Bash syntax ERRORs
             if [[ -z "$path_to_clean" || "$path_to_clean" == "#"* ]]; then continue; fi
 
             if [ -e "$path_to_clean" ]; then

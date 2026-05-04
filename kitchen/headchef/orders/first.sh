@@ -8,7 +8,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 # --- validation ---
 STATION_NAME="$1"
-[ -z "$STATION_NAME" ] && error "Usage: bake first <station_name>"
+[ -z "$STATION_NAME" ] && ERROR "Usage: bake first <station_name>"
 
 KITCHEN_ROOT="$(dirname "${BASH_SOURCE[0]}")/../.."
 STATION_DIR="$KITCHEN_ROOT/stations/$STATION_NAME"
@@ -32,7 +32,7 @@ fi
 # --- Fetching ---
 SAY "Fetching '$STATION_NAME' from the Registry..."
 TMP_DIR=$(mktemp -d)
-git clone --depth 1 --filter=blob:none --sparse "$STATIONS_REPO" "$TMP_DIR" > /dev/null 2>&1 || error "Failed to contact Registry."
+git clone --depth 1 --filter=blob:none --sparse "$STATIONS_REPO" "$TMP_DIR" > /dev/null 2>&1 || ERROR "Failed to contact Registry."
 
 cd "$TMP_DIR" || exit 1
 git sparse-checkout set "stations/$STATION_NAME" > /dev/null 2>&1
@@ -40,7 +40,7 @@ git sparse-checkout set "stations/$STATION_NAME" > /dev/null 2>&1
 if [ ! -d "stations/$STATION_NAME" ]; then
     cd - > /dev/null || exit
     rm -rf "$TMP_DIR"
-    error "The '$STATION_NAME' station doesn't exist in the Registry."
+    ERROR "The '$STATION_NAME' station doesn't exist in the Registry."
 fi
 
 cd - > /dev/null || exit
@@ -58,7 +58,7 @@ if [ -f "$STATION_DIR/cook/contract/.prerequisite" ]; then
         if ! command -v "$dep" &> /dev/null; then
             SAY "✗ Missing: $dep"
             rm -rf "$STATION_DIR"
-            error "Missing essential tools. Station setup aborted."
+            ERROR "Missing essential tools. Station setup aborted."
         else
             SAY "✓ Found: $dep"
         fi

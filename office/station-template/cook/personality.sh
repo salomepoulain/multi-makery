@@ -30,7 +30,7 @@ NC='\033[0m'
 
 # SELECT IDENTITY (Override these in your station)
 # -----------------------------------------------------
-COOK_ICON="✦"
+COOK_ICON="✦" # find at https://emojidb.org/
 COOK_NAME="my-station"
 COOK_COLOR="$CYAN"
 

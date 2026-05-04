@@ -110,3 +110,9 @@ ITEM() {
 
     printf "  %-${cmd_width}s %s\n" "$1" "$2"
 }
+
+
+ERROR() {                                                                                               
+    echo -e "${RED}✗ $1${NC}" >&2                                                                       
+    exit 1                                                                                       
+}

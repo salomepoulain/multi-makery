@@ -4,15 +4,16 @@
 # Recipes defined below are run via: bake call s=<station> d=<recipe>
 # (first, fresh, burnt are managed by the Head Chef)
 
+# Compute station directory when included from main menu.mk
+STATION_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
 menu::
-	@bash -c 'source cook/personality.sh && STARTER "$$COOK_NAME Station" && \
-		echo "  STATION RECIPES" && \
-		ITEM "bake $$COOK_NAME <recipe>" "Description of the recipe" && \
-		echo "" && \
+	@bash -c 'source "$(STATION_DIR)cook/personality.sh" && STARTER "$$COOK_NAME Station" && \ 
+		ITEM "<<example>>" "<<Description of the recipe>>" && \
 		FINISHED'
 
 # Add your recipes below:
 
-# example: Run an example task
+# models: Switch between Anthropic and OpenRouter providers
 example:
 	@bash cook/recipes/example.sh
