@@ -17,7 +17,7 @@ SAY "Contacting the agency at $REPO_URL..."
 TMP_DIR=$(mktemp -d)
 # We only need the top level list of folders
 if ! git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$TMP_DIR" > /dev/null 2>&1; then
-    error "Could not reach the agency."
+    SAY "Could not reach the agency."
 fi
 
 SAY "Available Line Cooks & Stations:"

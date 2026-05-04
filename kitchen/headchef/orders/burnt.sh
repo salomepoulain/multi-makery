@@ -7,7 +7,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../personality.sh"
 
 if [ -z "$1" ]; then
-    error "You didn't tell me which station to tear down."
+    SAY "You didn't tell me which station to tear down."
 fi
 
 STATION_NAME="$1"
