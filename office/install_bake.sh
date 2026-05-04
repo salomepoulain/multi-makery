@@ -78,8 +78,9 @@ cat > "$BIN_DIR/$BINARY_NAME" << 'BAKE_EOF'
 if [ -d ".makery" ]; then
     # Use internal menu.mk, leaving project's Makefile untouched
     if [ $# -ge 2 ] && [[ ! "$2" == *=* ]]; then
-        make -f .makery/menu.mk "$1" s="$2" "$@" 2>/dev/null || \
-            make -f .makery/menu.mk "call" s="$1" d="$2" "$@"
+        _bake_first="$1"; _bake_second="$2"; shift 2
+        make -f .makery/menu.mk "$_bake_first" s="$_bake_second" "$@" 2>/dev/null || \
+            make -f .makery/menu.mk "call" s="$_bake_first" d="$_bake_second" "$@"
     else
         make -f .makery/menu.mk "$@"
     fi

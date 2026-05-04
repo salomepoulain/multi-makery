@@ -3,17 +3,13 @@
 # ============================================================================
 
 menu::
-	@bash -c 'source .makery/kitchen/headchef/personality.sh && STARTER "The Head Chef'\''s Menu (multi-makery)" && \
-		echo "  CORE OPERATIONS" && \
-		ITEM "bake first <name>" "Hire a cook and open their new station (e.g. '\''python'\'')" && \
-		ITEM "bake burnt <name>" "Fire a cook, close their station, and throw out recipes" && \
-		ITEM "bake inspo" "Inspiration: list all available stations at the agency" && \
-		ITEM "bake germs" "Health Inspector prep: scrub all workbenches" && \
-		ITEM "bake fresh <name>" "Force the cook to scrub their specific workbench" && \
-		ITEM "bake all" "Bake everything at once, exploding the kitchen" && \
-		echo "" && \
-		echo "  (Standard '\''make'\'' fallback is supported: e.g. '\''make first s=python'\'')" && \
-		echo "" && \
+	@bash -c 'source .makery/kitchen/headchef/personality.sh && STARTER "The Head Chef'\''s Menu" && \
+		ITEM "first <name>" "Hire a cook and open their new station (e.g. '\''python'\'')" && \
+		ITEM "burnt <name>" "Fire a cook, close their station, and throw out recipes" && \
+		ITEM "inspo" "Inspiration: list all available stations at the agency" && \
+		ITEM "germs" "Health Inspector prep: scrub all workbenches" && \
+		ITEM "fresh <name>" "Force the cook to scrub their specific workbench" && \
+		ITEM "all" "Bake everything at once, exploding the kitchen" && \
 		FINISHED'
 
 inspo::
@@ -39,7 +35,10 @@ call::
 	DISH="$(d)"; \
 	cd .makery/kitchen/stations/$$STATION && make -f menu.mk $$DISH
 
-# Include station menus if available (for use as .makery/menu.mk)
--include .makery/kitchen/stations/*/menu.mk
+# Build station menus dynamically (append after headchef menu)
+menu::
+	@for station_dir in .makery/kitchen/stations/*/; do \
+		[ -f "$$station_dir/menu.mk" ] && $(MAKE) -f "$$station_dir/menu.mk" menu; \
+	done
 
 help:: menu

@@ -76,14 +76,25 @@ SAY() {
 }
 
 ITEM() {
-    local cols indent cmd_width desc_width
+    local cols cmd_width msg_start_col desc_width
     cols=$(_term_cols)
-    indent=4
     cmd_width=28
-    desc_width=$(( cols - indent - cmd_width - 2 ))
+    msg_start_col=$(( 4 + cmd_width + 2 ))
+    desc_width=$(( cols - msg_start_col ))
     [[ "$desc_width" -lt 10 ]] && desc_width=10
 
-    printf "  %-${cmd_width}s %s\n" "$1" "$2"
+    local cont_indent
+    cont_indent=$(printf '%*s' "$msg_start_col" '')
+
+    local desc_line first=1
+    while IFS= read -r desc_line; do
+        if [[ $first -eq 1 ]]; then
+            printf "  %-${cmd_width}s  %s\n" "$1" "$desc_line"
+            first=0
+        else
+            printf "%s  %s\n" "$cont_indent" "$desc_line"
+        fi
+    done <<< "$(printf '%s' "$2" | fold -sw "$desc_width")"
 }
 
 STARTER() {

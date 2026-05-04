@@ -16,4 +16,4 @@ menu::
 
 # models: Switch between Anthropic and OpenRouter providers
 example:
-	@bash cook/recipes/example.sh
+	@bash $(STATION_DIR)cook/recipes/example.sh
